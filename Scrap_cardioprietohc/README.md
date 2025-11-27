@@ -28,6 +28,17 @@ python -m scrap_cardioprietohc.cli run --target pacientes
 
 # Historias
 python -m scrap_cardioprietohc.cli run --target historias
+
+# RAG: indexar y consultar lo scrapeado
+python -m scrap_cardioprietohc.cli rag-index --source data/raw --index data/cache/rag_index.pkl
+python -m scrap_cardioprietohc.cli rag-query --index data/cache/rag_index.pkl --query "nombre de campo"
 ```
 
 Los HTML y JSON quedan en `data/raw/` y los logs en `data/logs/`.
+
+## Flujo multi-puesto (casa/oficina)
+- Configurá un venv por máquina (`python -m venv .venv && source .venv/bin/activate`).
+- En casa (con acceso al sitio) corré el scraper y empaquetá `data/raw` + `data/logs` en un `data_snapshot_*.tar.gz` (ver `WORKFLOW.md` para comandos).
+- Transferí el snapshot por VPN/USB y extráelo en la oficina; allí seguís con el parseo sin tocar internet.
+- Sincronizá código y `SESSION_NOTES.md` por git; no subas los snapshots ni `.env`.
+- El índice RAG (por defecto `data/cache/rag_index.pkl`) no se sube a git; podés regenerarlo en cada máquina desde `data/raw`.
