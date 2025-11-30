@@ -26,3 +26,8 @@ Llevo aproximadamente 5 años (incluyendo el período de pandemia) intentando fi
 5.  **Bases de Datos en Docker:** Tanto la base de datos antigua (del dump) como la nueva (del proyecto Django) estarán corriendo en dos contenedores Docker separados. Gemini debe considerar esta configuración.
 6.  **Entrega de Código:** Cualquier modificación o avance se entregará en formato de código.
 7.  **Checkpoints de Commit:** Una vez que se complete una modificación importante (no en pasos intermedios de desarrollo), se debe realizar un commit en el repositorio del proyecto para marcar un "checkpoint".
+
+## Nota adicional de visualizacion
+- Prioridad: reproducir fielmente layouts, posiciones, colores, espaciados y componentes del sistema original antes de tocar lógica/datos.
+- No cambiar UI salvo pedido explícito o mejora indiscutible; si faltan assets CSS/JS, obtenerlos primero.
+- El scrape se usa para capturar estructura/flujo visual, no solo datos.
