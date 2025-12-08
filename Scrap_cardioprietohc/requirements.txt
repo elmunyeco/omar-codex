@@ -1,6 +1,0 @@
-crawl4ai
-httpx
-beautifulsoup4
-python-dotenv
-# playwright
-scikit-learn
