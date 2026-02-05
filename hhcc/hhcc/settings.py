@@ -108,6 +108,10 @@ DATABASES = {
     }
 }
 
+# Permite usar sqlite en entorno local/sandbox sin MySQL.
+if os.environ.get("USE_SANDBOX_DB") == "1":
+    DATABASES["default"] = DATABASES["sandbox"]
+
 
 # Password validation
 # https://docs.djangoproject.com/en/5.0/ref/settings/#auth-password-validators

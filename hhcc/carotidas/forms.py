@@ -1,3 +1,5 @@
+from decimal import Decimal, InvalidOperation
+
 from django import forms
 
 from .models import CarotidasEstudio
@@ -31,5 +33,10 @@ class CarotidasForm(forms.ModelForm):
         for field in ["esp_int_med_der", "esp_int_med_izq"]:
             val = self.data.get(field)
             if val and "," in val:
-                cleaned[field] = val.replace(",", ".")
+                val = val.replace(",", ".")
+            if val:
+                try:
+                    cleaned[field] = Decimal(val)
+                except InvalidOperation:
+                    self.add_error(field, "Por favor, escriba un número válido.")
         return cleaned

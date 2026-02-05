@@ -14,14 +14,14 @@ class CarotidasEstudio(models.Model):
         on_delete=models.CASCADE,
         related_name="carotidas_estudios",
     )
-    com_derecha = models.CharField(max_length=20, null=True, blank=True)
-    int_derecha = models.CharField(max_length=20, null=True, blank=True)
-    ext_derecha = models.CharField(max_length=20, null=True, blank=True)
-    com_izquierda = models.CharField(max_length=20, null=True, blank=True)
-    int_izquierda = models.CharField(max_length=20, null=True, blank=True)
-    ext_izquierda = models.CharField(max_length=20, null=True, blank=True)
-    art_vertebrales = models.CharField(max_length=20, null=True, blank=True)
-    sugerencias = models.CharField(max_length=20, null=True, blank=True)
+    com_derecha = models.CharField(max_length=255, null=True, blank=True)
+    int_derecha = models.CharField(max_length=255, null=True, blank=True)
+    ext_derecha = models.CharField(max_length=255, null=True, blank=True)
+    com_izquierda = models.CharField(max_length=255, null=True, blank=True)
+    int_izquierda = models.CharField(max_length=255, null=True, blank=True)
+    ext_izquierda = models.CharField(max_length=255, null=True, blank=True)
+    art_vertebrales = models.CharField(max_length=255, null=True, blank=True)
+    sugerencias = models.CharField(max_length=255, null=True, blank=True)
     id_com_der = models.PositiveIntegerField(default=0)
     id_com_izq = models.PositiveIntegerField(default=0)
     esp_int_med_der = models.DecimalField(
@@ -30,6 +30,14 @@ class CarotidasEstudio(models.Model):
     esp_int_med_izq = models.DecimalField(
         max_digits=4, decimal_places=2, null=True, blank=True
     )
+
+    COMUN_CHOICES = {
+        1: "Dentro de límites normales. Sin lesiones que impresionen patológicas.",
+        2: "Presenta múltiples lesiones sin compromiso hemodinámico anterógrado.",
+        3: "Presenta incremento del espesor íntima media.",
+        4: "Presenta recorrido tortuoso que genera flujo turbulento.",
+        99: "Otras.",
+    }
 
     class Meta:
         db_table = "carotidas"
@@ -42,3 +50,9 @@ class CarotidasEstudio(models.Model):
 
     def __str__(self):
         return f"Carótidas HC {self.historia_id} - Estudio {self.pk or 'nuevo'}"
+
+    def com_der_texto(self):
+        return self.COMUN_CHOICES.get(self.id_com_der, "")
+
+    def com_izq_texto(self):
+        return self.COMUN_CHOICES.get(self.id_com_izq, "")

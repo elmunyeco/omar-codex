@@ -1,0 +1,2388 @@
+
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Buscar Pacientes - Dr. Omar Prieto</title>
+
+    
+
+    <link rel="stylesheet" href="/static/main/css/style.css">
+
+
+    <!-- Alpine.js -->
+    <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
+
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    
+<!-- Estilos adicionales específicos para esta página -->
+<style>
+  /* Estilos para lograr un mejor balance del ancho de la tabla */
+  .table-container {
+    width: 95%;
+    max-width: 1400px; /* Un máximo razonable para evitar que sea demasiado ancha en pantallas muy grandes */
+    margin: 0 auto;
+  }
+  
+  /* Optimización para pantallas medianas */
+  @media (max-width: 1200px) {
+    .table-container {
+      width: 98%;
+    }
+  }
+  
+  /* Optimización para dispositivos móviles */
+  @media (max-width: 640px) {
+    .search-button-text {
+      display: none;
+    }
+    
+    .search-type {
+      max-width: 110px;
+      font-size: 0.875rem;
+    }
+  }
+</style>
+
+</head>
+
+<body class="min-h-screen flex flex-col">
+    
+
+
+
+<header class="header-container">
+    <div class="header-main">
+        <div class="logo-section">
+            <img src="/static/main/images/logo.png" alt="Logo Dr. Omar Prieto">
+            <div class="doctor-title">
+                <span class="doctor-name">Dr. Omar Prieto</span>
+                <span class="doctor-specialty">CARDIOLOGÍA INTEGRAL</span>
+            </div>
+        </div>
+        <div class="user-actions">
+            <div class="user-info">
+                <span>Dr. Omar Prieto</span>
+            </div>
+            <button id="logout-button" class="logout-btn">Cerrar Sesión</button>
+        </div>
+    </div>
+    
+    <nav class="main-nav">
+        <ul class="main-menu">
+            <li class="menu-item ">
+                <a href="/" class="menu-link">Inicio</a>
+            </li>
+            
+            <li class="menu-item " data-menu="pacientes">
+                <a href="#" class="menu-link menu-toggle">Pacientes</a>
+                <div class="submenu-items hidden">  <!-- Añadido 'hidden' aquí -->
+                    <a href="/pacientes/" class="submenu-link">Buscar Pacientes</a>
+                    <a href="/pacientes/crear/" class="submenu-link">Nuevo Paciente</a>
+                </div>
+            </li>
+            
+            <li class="menu-item " data-menu="historias">
+                <a href="#" class="menu-link menu-toggle">Historias</a>
+                <div class="submenu-items hidden">
+                    <a href="/historias/" class="submenu-link">Buscar Historias</a>
+                    <!-- Nuevas opciones en el submenú -->
+                    <a href="/h1/" class="submenu-link">Uno</a>
+                    <a href="/h2/" class="submenu-link">Dos</a>
+                    <a href="/h3/" class="submenu-link">Tres</a>
+                </div>
+            </li>
+            
+            <li class="menu-item " data-menu="ordenes">
+                <a href="#" class="menu-link menu-toggle">Órdenes</a>
+                <div class="submenu-items hidden">  <!-- Añadido 'hidden' aquí -->
+                    <a href="/ordenes_medicas/0/" class="submenu-link">Órdenes Médicas</a>
+                    <a href="/ordenes_pedicas/0/" class="submenu-link">Solicitudes</a>
+                </div>
+            </li>
+        </ul>
+        
+        <div class="current-path">
+            
+        </div>
+    </nav>
+</header>
+
+
+   <main class="flex-grow page-content">
+        <div class="container-content">
+            
+<h1 class="text-2xl font-bold mb-8 text-left">Listado de Pacientes</h1>
+
+<!-- Formulario de búsqueda con estructura original -->
+<div class="relative max-w-3xl px-4 mx-auto sm:px-6 mb-10">
+    <form action="" method="GET" class="flex items-center">
+        <input type="text" name="query" id="query" placeholder="Buscar..." value=""
+            class="rounded-full w-full h-18 bg-white py-0 pl-8 pr-32 outline-none border-2 border-gray-100 shadow-md focus:ring-indigo-200 focus:border-indigo-200" />
+        <!-- Select para elegir tipo de búsqueda -->
+        <select name="tipo" id="tipo"
+            class="search-type absolute right-40 h-10 px-4 py-2 bg-white border border-gray-300 rounded-full focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500">
+            <option value="Documento" selected>DNI</option>
+            <option value="Nombre" >Nombre</option>
+            <option value="Apellido" >Apellido</option>
+        </select>
+        <!-- Botón de búsqueda -->
+        <button type="submit" 
+            class="absolute inline-flex items-center right-9 h-12 px-4 py-2 bg-[#9a4035] text-white rounded-full hover:bg-[#7a332b] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 flex items-center justify-center">
+            <svg class="w-6 h-6 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+                stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+            </svg>
+            <span class="search-button-text ml-2">Buscar</span>
+        </button>
+    </form>
+</div>
+
+<!-- Tabla de pacientes con ancho balanceado -->
+<div class="table-container">
+    <div class="overflow-x-auto bg-white shadow-md rounded-lg p-6 mb-8">
+        <table class="w-full table-auto border-collapse border border-gray-300">
+            <thead class="bg-gray-200 border-b-2 border-gray-300">
+                <tr>
+                    <th class="px-4 py-2 text-left font-semibold text-gray-700 border border-gray-300">Nombre</th>
+                    <th class="px-4 py-2 text-left font-semibold text-gray-700 border border-gray-300">Apellido</th>
+                    <th class="px-4 py-2 text-left font-semibold text-gray-700 border border-gray-300">Documento</th>
+                    <th class="px-4 py-2 text-center font-semibold text-gray-700 border border-gray-300">Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                
+                <tr class="hover:bg-gray-50">
+                    <td class="px-4 py-2 border border-gray-300">Wilian </td>
+                    <td class="px-4 py-2 border border-gray-300">Rodriguez</td>
+                    <td class="px-4 py-2 border border-gray-300">DNI </td>
+                    <td class="px-4 py-2 border border-gray-300">
+                        <div class="flex justify-center space-x-4">
+                            <!-- Botón Editar con icono -->
+                            <a href="/pacientes/11564/editar/" 
+                               class="text-blue-600 hover:text-blue-800 transition-colors flex items-center" 
+                               title="Editar paciente">
+                                <svg class="w-5 h-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                                </svg>
+                            </a>
+                        </div>
+                    </td>
+                </tr>
+                
+                <tr class="hover:bg-gray-50">
+                    <td class="px-4 py-2 border border-gray-300">Jose Luis </td>
+                    <td class="px-4 py-2 border border-gray-300">Abadia</td>
+                    <td class="px-4 py-2 border border-gray-300">DNI </td>
+                    <td class="px-4 py-2 border border-gray-300">
+                        <div class="flex justify-center space-x-4">
+                            <!-- Botón Editar con icono -->
+                            <a href="/pacientes/11563/editar/" 
+                               class="text-blue-600 hover:text-blue-800 transition-colors flex items-center" 
+                               title="Editar paciente">
+                                <svg class="w-5 h-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                                </svg>
+                            </a>
+                        </div>
+                    </td>
+                </tr>
+                
+                <tr class="hover:bg-gray-50">
+                    <td class="px-4 py-2 border border-gray-300">Vicente</td>
+                    <td class="px-4 py-2 border border-gray-300">Malandrino</td>
+                    <td class="px-4 py-2 border border-gray-300">DNI </td>
+                    <td class="px-4 py-2 border border-gray-300">
+                        <div class="flex justify-center space-x-4">
+                            <!-- Botón Editar con icono -->
+                            <a href="/pacientes/11562/editar/" 
+                               class="text-blue-600 hover:text-blue-800 transition-colors flex items-center" 
+                               title="Editar paciente">
+                                <svg class="w-5 h-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                                </svg>
+                            </a>
+                        </div>
+                    </td>
+                </tr>
+                
+                <tr class="hover:bg-gray-50">
+                    <td class="px-4 py-2 border border-gray-300">Cristian Adrian</td>
+                    <td class="px-4 py-2 border border-gray-300"> Barroso</td>
+                    <td class="px-4 py-2 border border-gray-300">DNI </td>
+                    <td class="px-4 py-2 border border-gray-300">
+                        <div class="flex justify-center space-x-4">
+                            <!-- Botón Editar con icono -->
+                            <a href="/pacientes/11561/editar/" 
+                               class="text-blue-600 hover:text-blue-800 transition-colors flex items-center" 
+                               title="Editar paciente">
+                                <svg class="w-5 h-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                                </svg>
+                            </a>
+                        </div>
+                    </td>
+                </tr>
+                
+                <tr class="hover:bg-gray-50">
+                    <td class="px-4 py-2 border border-gray-300">Bautista </td>
+                    <td class="px-4 py-2 border border-gray-300">Garriz Godoy</td>
+                    <td class="px-4 py-2 border border-gray-300">DNI </td>
+                    <td class="px-4 py-2 border border-gray-300">
+                        <div class="flex justify-center space-x-4">
+                            <!-- Botón Editar con icono -->
+                            <a href="/pacientes/11560/editar/" 
+                               class="text-blue-600 hover:text-blue-800 transition-colors flex items-center" 
+                               title="Editar paciente">
+                                <svg class="w-5 h-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                                </svg>
+                            </a>
+                        </div>
+                    </td>
+                </tr>
+                
+                <tr class="hover:bg-gray-50">
+                    <td class="px-4 py-2 border border-gray-300">Monica</td>
+                    <td class="px-4 py-2 border border-gray-300">Fernandez</td>
+                    <td class="px-4 py-2 border border-gray-300">DNI </td>
+                    <td class="px-4 py-2 border border-gray-300">
+                        <div class="flex justify-center space-x-4">
+                            <!-- Botón Editar con icono -->
+                            <a href="/pacientes/11559/editar/" 
+                               class="text-blue-600 hover:text-blue-800 transition-colors flex items-center" 
+                               title="Editar paciente">
+                                <svg class="w-5 h-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                                </svg>
+                            </a>
+                        </div>
+                    </td>
+                </tr>
+                
+                <tr class="hover:bg-gray-50">
+                    <td class="px-4 py-2 border border-gray-300">Valentino </td>
+                    <td class="px-4 py-2 border border-gray-300">Robbiani Heil</td>
+                    <td class="px-4 py-2 border border-gray-300">DNI </td>
+                    <td class="px-4 py-2 border border-gray-300">
+                        <div class="flex justify-center space-x-4">
+                            <!-- Botón Editar con icono -->
+                            <a href="/pacientes/11558/editar/" 
+                               class="text-blue-600 hover:text-blue-800 transition-colors flex items-center" 
+                               title="Editar paciente">
+                                <svg class="w-5 h-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                                </svg>
+                            </a>
+                        </div>
+                    </td>
+                </tr>
+                
+                <tr class="hover:bg-gray-50">
+                    <td class="px-4 py-2 border border-gray-300">Tomas</td>
+                    <td class="px-4 py-2 border border-gray-300">Burger Wagner </td>
+                    <td class="px-4 py-2 border border-gray-300">DNI </td>
+                    <td class="px-4 py-2 border border-gray-300">
+                        <div class="flex justify-center space-x-4">
+                            <!-- Botón Editar con icono -->
+                            <a href="/pacientes/11557/editar/" 
+                               class="text-blue-600 hover:text-blue-800 transition-colors flex items-center" 
+                               title="Editar paciente">
+                                <svg class="w-5 h-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                                </svg>
+                            </a>
+                        </div>
+                    </td>
+                </tr>
+                
+                <tr class="hover:bg-gray-50">
+                    <td class="px-4 py-2 border border-gray-300">Valentina </td>
+                    <td class="px-4 py-2 border border-gray-300">Burger Wagner</td>
+                    <td class="px-4 py-2 border border-gray-300">DNI </td>
+                    <td class="px-4 py-2 border border-gray-300">
+                        <div class="flex justify-center space-x-4">
+                            <!-- Botón Editar con icono -->
+                            <a href="/pacientes/11556/editar/" 
+                               class="text-blue-600 hover:text-blue-800 transition-colors flex items-center" 
+                               title="Editar paciente">
+                                <svg class="w-5 h-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                                </svg>
+                            </a>
+                        </div>
+                    </td>
+                </tr>
+                
+                <tr class="hover:bg-gray-50">
+                    <td class="px-4 py-2 border border-gray-300">Jose Omar</td>
+                    <td class="px-4 py-2 border border-gray-300">Sosa</td>
+                    <td class="px-4 py-2 border border-gray-300">DNI </td>
+                    <td class="px-4 py-2 border border-gray-300">
+                        <div class="flex justify-center space-x-4">
+                            <!-- Botón Editar con icono -->
+                            <a href="/pacientes/11555/editar/" 
+                               class="text-blue-600 hover:text-blue-800 transition-colors flex items-center" 
+                               title="Editar paciente">
+                                <svg class="w-5 h-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                                </svg>
+                            </a>
+                        </div>
+                    </td>
+                </tr>
+                
+                <tr class="hover:bg-gray-50">
+                    <td class="px-4 py-2 border border-gray-300">Horacio </td>
+                    <td class="px-4 py-2 border border-gray-300">De Luca</td>
+                    <td class="px-4 py-2 border border-gray-300">DNI </td>
+                    <td class="px-4 py-2 border border-gray-300">
+                        <div class="flex justify-center space-x-4">
+                            <!-- Botón Editar con icono -->
+                            <a href="/pacientes/11554/editar/" 
+                               class="text-blue-600 hover:text-blue-800 transition-colors flex items-center" 
+                               title="Editar paciente">
+                                <svg class="w-5 h-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                                </svg>
+                            </a>
+                        </div>
+                    </td>
+                </tr>
+                
+                <tr class="hover:bg-gray-50">
+                    <td class="px-4 py-2 border border-gray-300">Javier</td>
+                    <td class="px-4 py-2 border border-gray-300">Fernandez</td>
+                    <td class="px-4 py-2 border border-gray-300">DNI </td>
+                    <td class="px-4 py-2 border border-gray-300">
+                        <div class="flex justify-center space-x-4">
+                            <!-- Botón Editar con icono -->
+                            <a href="/pacientes/11553/editar/" 
+                               class="text-blue-600 hover:text-blue-800 transition-colors flex items-center" 
+                               title="Editar paciente">
+                                <svg class="w-5 h-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                                </svg>
+                            </a>
+                        </div>
+                    </td>
+                </tr>
+                
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<!-- Paginación -->
+<div class="mt-10 flex justify-center">
+    <nav aria-label="Paginación">
+        <ul class="inline-flex space-x-2">
+            <!-- Botones de retroceso -->
+            
+
+            <!-- Números de página: mostrar solo un rango razonable de páginas -->
+            
+            
+            <li class="active">
+                <a href="?page=1&query=&tipo=Documento"
+                    class="px-3 py-1 bg-[#9a4035] text-white rounded">1</a>
+            </li>
+            
+            
+            
+            <li class="">
+                <a href="?page=2&query=&tipo=Documento"
+                    class="px-3 py-1 bg-gray-200 text-gray-700 hover:bg-gray-300 rounded">2</a>
+            </li>
+            
+            
+            
+            <li class="">
+                <a href="?page=3&query=&tipo=Documento"
+                    class="px-3 py-1 bg-gray-200 text-gray-700 hover:bg-gray-300 rounded">3</a>
+            </li>
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+
+            <!-- Botones de avance -->
+            
+            <li><a href="?page=2&query=&tipo=Documento"
+                    class="px-3 py-1 bg-gray-200 text-gray-700 rounded hover:bg-gray-300">&gt;</a></li>
+            <li><a href="?page=964&query=&tipo=Documento"
+                    class="px-3 py-1 bg-gray-200 text-gray-700 rounded hover:bg-gray-300">&raquo;</a></li>
+            
+        </ul>
+    </nav>
+</div>
+
+<!-- Botón flotante para agregar nuevo paciente -->
+<div class="fixed bottom-6 right-6">
+    <a href="/pacientes/crear/" 
+       class="flex items-center justify-center w-14 h-14 rounded-full bg-[#9a4035] text-white shadow-lg hover:bg-[#7a332b] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#9a4035]">
+        <svg class="w-8 h-8" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+        </svg>
+    </a>
+</div>
+
+        </div>
+    </main>
+
+
+    <!-- Scripts comunes -->
+    <script src="/static/main/js/components/header.js"></script>
+
+    
+<script>
+    // Este script se ejecuta después de que la página carga
+    document.addEventListener('DOMContentLoaded', function() {
+        // Configurar breadcrumbs para Alpine
+        const breadcrumbs = [
+            { label: 'Inicio', url: '/' },
+            { label: 'Buscar Pacientes', url: '/pacientes/' }
+        ];
+        
+        // Si estamos en Alpine, configurar el componente
+        if (window.Alpine) {
+            Alpine.store('breadcrumbs', breadcrumbs);
+            
+            // Acceder al componente del header para actualizar sus breadcrumbs
+            const header = document.querySelector('[x-data="headerComponent"]');
+            if (header && header.__x) {
+                header.__x.$data.activeSection = 'pacientes';
+                header.__x.$data.breadcrumbs = breadcrumbs;
+            }
+        }
+    });
+</script>
+
+</body>
+
+</html>

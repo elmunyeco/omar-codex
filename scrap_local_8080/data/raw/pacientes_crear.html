@@ -1,0 +1,266 @@
+
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nuevo Paciente - CardioPrieto</title>
+
+    
+
+    <link rel="stylesheet" href="/static/main/css/style.css">
+
+
+    <!-- Alpine.js -->
+    <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
+
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    
+</head>
+
+<body class="min-h-screen flex flex-col">
+    
+
+
+
+<header class="header-container">
+    <div class="header-main">
+        <div class="logo-section">
+            <img src="/static/main/images/logo.png" alt="Logo Dr. Omar Prieto">
+            <div class="doctor-title">
+                <span class="doctor-name">Dr. Omar Prieto</span>
+                <span class="doctor-specialty">CARDIOLOGÍA INTEGRAL</span>
+            </div>
+        </div>
+        <div class="user-actions">
+            <div class="user-info">
+                <span>Dr. Omar Prieto</span>
+            </div>
+            <button id="logout-button" class="logout-btn">Cerrar Sesión</button>
+        </div>
+    </div>
+    
+    <nav class="main-nav">
+        <ul class="main-menu">
+            <li class="menu-item ">
+                <a href="/" class="menu-link">Inicio</a>
+            </li>
+            
+            <li class="menu-item " data-menu="pacientes">
+                <a href="#" class="menu-link menu-toggle">Pacientes</a>
+                <div class="submenu-items hidden">  <!-- Añadido 'hidden' aquí -->
+                    <a href="/pacientes/" class="submenu-link">Buscar Pacientes</a>
+                    <a href="/pacientes/crear/" class="submenu-link">Nuevo Paciente</a>
+                </div>
+            </li>
+            
+            <li class="menu-item " data-menu="historias">
+                <a href="#" class="menu-link menu-toggle">Historias</a>
+                <div class="submenu-items hidden">
+                    <a href="/historias/" class="submenu-link">Buscar Historias</a>
+                    <!-- Nuevas opciones en el submenú -->
+                    <a href="/h1/" class="submenu-link">Uno</a>
+                    <a href="/h2/" class="submenu-link">Dos</a>
+                    <a href="/h3/" class="submenu-link">Tres</a>
+                </div>
+            </li>
+            
+            <li class="menu-item " data-menu="ordenes">
+                <a href="#" class="menu-link menu-toggle">Órdenes</a>
+                <div class="submenu-items hidden">  <!-- Añadido 'hidden' aquí -->
+                    <a href="/ordenes_medicas/0/" class="submenu-link">Órdenes Médicas</a>
+                    <a href="/ordenes_pedicas/0/" class="submenu-link">Solicitudes</a>
+                </div>
+            </li>
+        </ul>
+        
+        <div class="current-path">
+            
+        </div>
+    </nav>
+</header>
+
+
+   <main class="flex-grow page-content">
+        <div class="container-content">
+            
+<div class="container mx-auto p-6 max-w-6xl">
+    <h1 class="text-2xl font-bold mb-8 text-left">Nuevo Paciente</h1>
+
+    <div class="bg-white shadow-md rounded-lg p-8 mb-8">
+        <form method="POST" class="grid grid-cols-1 gap-6 md:grid-cols-2">
+            <input type="hidden" name="csrfmiddlewaretoken" value="0NeURktJVLDr8ltd8NtG4ESEHZHPYl6w4Uz7kIzDCmWB1837Ya5rZsTSakezgCpW">
+            
+            <!-- Campos requeridos -->
+            <div class="form-field">
+                <label for="id_idTipoDoc" class="block text-sm font-medium text-gray-700 mb-2">Tipo de Documento *</label>
+                <select name="idTipoDoc" id="id_idTipoDoc" 
+                    class="w-full p-2 border rounded focus:ring-1 focus:ring-[#9a4035] focus:border-[#9a4035]" required>
+                    
+                    <option value="1">DNI</option>
+                    
+                    <option value="2">CI</option>
+                    
+                    <option value="3">LE</option>
+                    
+                    <option value="4">LC</option>
+                    
+                </select>
+                
+            </div>
+            
+            <div class="form-field">
+                <label for="id_numDoc" class="block text-sm font-medium text-gray-700 mb-2">Nº Documento *</label>
+                <input type="text" name="numDoc" id="id_numDoc" 
+                    class="w-full p-2 border rounded focus:ring-1 focus:ring-[#9a4035] focus:border-[#9a4035]" 
+                    placeholder="Ingrese número de documento" required>
+                
+            </div>
+            
+            <div class="form-field">
+                <label for="id_nombre" class="block text-sm font-medium text-gray-700 mb-2">Nombre *</label>
+                <input type="text" name="nombre" id="id_nombre" 
+                    class="w-full p-2 border rounded focus:ring-1 focus:ring-[#9a4035] focus:border-[#9a4035]" 
+                    placeholder="Ingrese nombre" required>
+                
+            </div>
+            
+            <div class="form-field">
+                <label for="id_apellido" class="block text-sm font-medium text-gray-700 mb-2">Apellido *</label>
+                <input type="text" name="apellido" id="id_apellido" 
+                    class="w-full p-2 border rounded focus:ring-1 focus:ring-[#9a4035] focus:border-[#9a4035]" 
+                    placeholder="Ingrese apellido" required>
+                
+            </div>
+            
+            <div class="form-field">
+                <label for="id_fechaNac" class="block text-sm font-medium text-gray-700 mb-2">Fecha de Nacimiento *</label>
+                <input type="date" name="fechaNac" id="id_fechaNac" 
+                    class="w-full p-2 border rounded focus:ring-1 focus:ring-[#9a4035] focus:border-[#9a4035]" required>
+                
+            </div>
+            
+            <div class="form-field">
+                <label class="block text-sm font-medium text-gray-700 mb-2">Sexo *</label>
+                <div class="flex gap-4">
+                    <label class="flex items-center">
+                        <input type="radio" name="sexo" value="M" required>
+                        <span class="ml-2">Hombre</span>
+                    </label>
+                    <label class="flex items-center">
+                        <input type="radio" name="sexo" value="F" required>
+                        <span class="ml-2">Mujer</span>
+                    </label>
+                </div>
+                
+            </div>
+            
+            <!-- Campos opcionales -->
+            <div class="form-field">
+                <label for="id_mail" class="block text-sm font-medium text-gray-700 mb-2">Email</label>
+                <input type="email" name="mail" id="id_mail" 
+                    class="w-full p-2 border rounded focus:ring-1 focus:ring-[#9a4035] focus:border-[#9a4035]" 
+                    placeholder="Ingrese email">
+                
+            </div>
+            
+            <div class="form-field">
+                <label for="id_telefono" class="block text-sm font-medium text-gray-700 mb-2">Teléfono</label>
+                <input type="text" name="telefono" id="id_telefono" 
+                    class="w-full p-2 border rounded focus:ring-1 focus:ring-[#9a4035] focus:border-[#9a4035]" 
+                    placeholder="Ingrese teléfono">
+                
+            </div>
+            
+            <div class="form-field">
+                <label for="id_celular" class="block text-sm font-medium text-gray-700 mb-2">Celular</label>
+                <input type="text" name="celular" id="id_celular" 
+                    class="w-full p-2 border rounded focus:ring-1 focus:ring-[#9a4035] focus:border-[#9a4035]" 
+                    placeholder="Ingrese celular">
+                
+            </div>
+            
+            <div class="form-field">
+                <label for="id_direccion" class="block text-sm font-medium text-gray-700 mb-2">Dirección</label>
+                <input type="text" name="direccion" id="id_direccion" 
+                    class="w-full p-2 border rounded focus:ring-1 focus:ring-[#9a4035] focus:border-[#9a4035]" 
+                    placeholder="Ingrese dirección">
+                
+            </div>
+            
+            <div class="form-field">
+                <label for="id_localidad" class="block text-sm font-medium text-gray-700 mb-2">Localidad</label>
+                <input type="text" name="localidad" id="id_localidad" 
+                    class="w-full p-2 border rounded focus:ring-1 focus:ring-[#9a4035] focus:border-[#9a4035]" 
+                    placeholder="Ingrese localidad">
+                
+            </div>
+            
+            <div class="form-field">
+                <label for="id_obraSocial" class="block text-sm font-medium text-gray-700 mb-2">Obra Social</label>
+                <input type="text" name="obraSocial" id="id_obraSocial" 
+                    class="w-full p-2 border rounded focus:ring-1 focus:ring-[#9a4035] focus:border-[#9a4035]" 
+                    placeholder="Ingrese obra social">
+                
+            </div>
+            
+            <div class="form-field">
+                <label for="id_plan" class="block text-sm font-medium text-gray-700 mb-2">Plan</label>
+                <input type="text" name="plan" id="id_plan" 
+                    class="w-full p-2 border rounded focus:ring-1 focus:ring-[#9a4035] focus:border-[#9a4035]" 
+                    placeholder="Ingrese plan">
+                
+            </div>
+            
+            <div class="form-field">
+                <label for="id_afiliado" class="block text-sm font-medium text-gray-700 mb-2">Nº Afiliado</label>
+                <input type="text" name="afiliado" id="id_afiliado" 
+                    class="w-full p-2 border rounded focus:ring-1 focus:ring-[#9a4035] focus:border-[#9a4035]" 
+                    placeholder="Ingrese número de afiliado">
+                
+            </div>
+            
+            <div class="form-field">
+                <label for="id_profesion" class="block text-sm font-medium text-gray-700 mb-2">Profesión</label>
+                <input type="text" name="profesion" id="id_profesion" 
+                    class="w-full p-2 border rounded focus:ring-1 focus:ring-[#9a4035] focus:border-[#9a4035]" 
+                    placeholder="Ingrese profesión">
+                
+            </div>
+            
+            <div class="form-field">
+                <label for="id_referente" class="block text-sm font-medium text-gray-700 mb-2">Médico Referente</label>
+                <input type="text" name="referente" id="id_referente" 
+                    class="w-full p-2 border rounded focus:ring-1 focus:ring-[#9a4035] focus:border-[#9a4035]" 
+                    placeholder="Ingrese médico referente">
+                
+            </div>
+            
+            <div class="col-span-2 flex justify-end space-x-4 mt-4">
+                <a href="/pacientes/" 
+                   class="btn-hover-effect px-4 py-2 text-[#9a4035] border border-[#9a4035] rounded-lg hover:bg-[#9a4035] hover:text-white">
+                    Cancelar
+                </a>
+                <button type="submit" 
+                    class="btn-hover-effect px-4 py-2 bg-[#9a4035] text-white rounded-lg hover:bg-[#7a332b]">
+                    Guardar Paciente
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+        </div>
+    </main>
+
+
+    <!-- Scripts comunes -->
+    <script src="/static/main/js/components/header.js"></script>
+
+    
+</body>
+
+</html>

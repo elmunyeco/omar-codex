@@ -50,6 +50,23 @@
 - Con red (scrapear): `codex --workspace /home/eze/culo/Scrap_cardioprietohc --sandbox-mode workspace-write --network-access enabled`; luego `source .venv/bin/activate` y comandos de run/index.
 - Headless: scripts `headless_capture.py` (sitio original, puede fallar por sandbox aquí) y `headless_capture_local.py` (ajustar BASE_URL para localhost; en este entorno falló el sandbox).
 
+
+## Carótidas (sandbox actual /home/eze/omar-codex/hhcc)
+- Templates creados en `hhcc/carotidas/templates/carotidas/`: `nuevo_estudio.html` y `detalle_estudio.html`.
+- UI Tailwind/Alpine con comportamiento legacy:
+  - Comentarios en carótida común solo visibles cuando se elige “Otras”.
+  - Sub-opciones solo visibles cuando se elige “Se observa lesión”.
+  - Vertebrales: sub-opciones Izq/Der solo si se elige “Disminución del flujo…”.
+  - Pre‑informe en vivo y botones “Limpiar” por bloque.
+  - Validación espesor íntima‑media (regex + coma→punto).
+- Modelo `CarotidasEstudio` con textos `max_length=255` y helpers `com_der_texto()`/`com_izq_texto()`.
+- Form normaliza decimales y agrega error si inválido.
+- Migraciones creadas: `carotidas/0001_initial.py` y `carotidas/0002_alter_*`.
+- Ajuste en `main/signals.py`: usa `fechaAlta` y respeta alias de DB al crear historia.
+- DB sandbox: flag `USE_SANDBOX_DB=1` en `hhcc/settings.py` usa sqlite.
+- Para probar: `USE_SANDBOX_DB=1 python manage.py runserver 0.0.0.0:8090` y abrir `/carotidas/1/nuevo/`.
+- Nota: `main.0003` se aplicó como `--fake` en sqlite por colisión de índices.
+
 ## Tareas pendientes (prioridad)
 - Generar migraciones para `carotidas` y crear templates (`carotidas/nuevo_estudio.html`, `detalle_estudio.html`) basados en lo scrapeado.
 - Decidir ajustes en pacientes (lista/form) respecto a los flujos originales y corregir `numDoc`/sexo.
