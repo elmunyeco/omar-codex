@@ -1,0 +1,95 @@
+/*@import url(//fonts.googleapis.com/css?family=Open+Sans:400);*/
+
+body{
+	width: 100%;
+	/*font: 15px "Open Sans", Arial, Helvetica, sans-serif;*/
+	color: #555;/*#7f7f7f*/
+}
+.datosPaciente{
+	padding-bottom: 5px;
+}
+.header{
+	/*position: relative;*/
+	text-align: center;
+	top: 30px;
+}
+.boxTitulos{
+	margin: 30px auto;
+}
+.boxLesiones{
+	margin-left: 50px;
+	margin-top: 20px;
+}
+.tituloPrincipal{
+	text-decoration: underline;
+	text-align: center;
+	font-size: 24px; 
+}
+.subtituloPrincipal{
+	text-align: center;
+	font-size: 20px; 	
+}
+.boxLesiones hr{
+	margin: 10px 0;
+}
+.boxInfoHeader{
+	font-weight: bold;
+	font-size:14px;
+	color: #7f7f7f;
+	float: right;
+}
+.datosPaciente .form-group{
+	margin-top: 0;
+	margin-bottom: 0;
+}
+.footer{
+	height: 50px;
+	width: 100%;
+	background: #eee;
+	margin-top: 50px; 
+}
+.boxComentario h5{
+	margin-top: 0;
+}
+.boxComentario textarea{
+	resize: vertical;
+}
+.boxComentario textarea.form-control{
+	resize: vertical;
+	min-height: 30px;
+	max-height: 200px;
+}
+.boxComentario{
+	display: none;
+}
+.table-hover tr th, .table-hover tr td{
+	font-size: 14px;
+}
+.form-control{
+	font-size: 12px;
+}
+.datosPaciente .form-group input.form-control{
+	padding: 0 6px;
+	height: 25px;
+}
+#msj{
+	display: none;
+	margin: 10px 0;
+	padding: 15px;
+}
+#ldgGuardar, #ldgGuardarEco{
+	display: none;
+}
+.glyphicon-refresh-animate {
+    animation: spin .7s infinite linear;
+    -webkit-animation: spin .7s infinite linear;
+}
+#imgLogo{
+	width: 260px;
+	height: 90px;
+	padding: 5px;
+}
+.bottom{
+	position: absolute;
+	bottom: 0;
+}​

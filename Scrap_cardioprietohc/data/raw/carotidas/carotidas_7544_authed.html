@@ -1,0 +1,413 @@
+<html>
+    
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+        <link rel="shortcut icon" href="https://cardioprietohc.com/images/icono.png">
+        <link rel="apple-touch-icon" href="https://cardioprietohc.com/images/icono.png">
+        <link rel="apple-touch-icon" sizes="72x72" href="https://cardioprietohc.com/images/icono.png">
+        <link rel="apple-touch-icon" sizes="114x114" href="https://cardioprietohc.com/images/icono.png">
+
+        <title>Doppler Color de Vasos del Cuello</title>
+        <link href="https://cardioprietohc.com/css/bootstrap.css" rel="stylesheet" type="text/css" media="all"/>
+        <link href="https://cardioprietohc.com/css/font-awesome.min.css" rel="stylesheet" type="text/css" media="all"/>
+        <link href="https://cardioprietohc.com/css/carotidas.css" rel="stylesheet" type="text/css" media="all"/>
+        <script type="text/javascript" src="https://cardioprietohc.com/js/jquery.min.js"></script>
+
+    </head>
+
+    <body>
+        <div class="header container">
+            <ul class="list-inline">
+                <img id="imgLogo" src="https://cardioprietohc.com/images/logo.jpg">
+				<br/>
+				<a href="http://www.cardioprieto.com" target="_blank">www.cardioprieto.com</a> 
+                </li>
+            </ul>
+        </div>
+        
+        <div class="clearfix"></div>
+        
+        <div class="container" style="margin-top:50px;">
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <h4 class="text-left">Datos del Paciente:</h4>
+                    <div style="float: right; font-size: 22px;position:relative; margin-top:-35px; margin-right: 5px;">
+                      
+                    </div>
+                </div>
+
+                <div class="panel-body">
+                    <div class="datosPaciente">
+                        <div class="form-group">
+                          <label class="col-sm-2 control-label">Nombre y Apellido:</label>
+                          <div class="col-sm-10">
+                            <p>
+                              Pirulin Pirulero                            </p>
+                          </div>
+                        </div>
+                        <div class="form-group">
+                          <label class="col-sm-2 control-label">Historia Clínica:</label>
+                          <div class="col-sm-10">
+                            <p>07544</p>
+                          </div>
+                        </div>
+                        <div class="form-group">
+                          <label class="col-sm-2 control-label">Fecha de Estudio:</label>
+                          <div class="col-sm-10">
+                            <p>08/12/2025</p>
+                          </div>
+                        </div>
+                    </div>
+                </div>
+            </div> <!-- FIN - PANEL DATOS PACIENTE -->
+
+            <div class="boxTitulos">
+              <h4 class="tituloPrincipal">Doppler Color de Vasos del Cuello</h4>
+              <h4 class="subtituloPrincipal">Analisis de Espesor Intima media (QIMT)</h4>
+              <h4 class="subtituloPrincipal">Quality Intima Media Thikness Analisys</h4>
+            </div>
+
+                        
+            <div id="msj" class="text-center"></div>
+              <form id="formCarotidas" class="form-horizontal" role="form" action="https://cardioprietohc.com/index.php/carotidas/guardarInforme">
+                <input type="hidden" id="idHC" name="idHC" value="7544">
+                <input type="hidden" id="idEstudio" name="idEstudio" value="0">
+                <input type="hidden" id="idComDer" name="idComDer" value="0">
+                <input type="hidden" id="idComIzq" name="idComIzq" value="0">
+                <div class="panel panel-default">
+                  <div class="panel-heading">
+                      <h4 class="text-left">Informe:</h4>
+                  </div>
+
+                  <div class="panel-body">                        
+                        <div class="form-group boxInforme">
+                            <label class="col-sm-2 control-label">Carotida Común Derecha:</label>
+                            <div class="col-sm-4" data-id="1">
+                              <select class="form-control" data-id="1" name="listCarComDer">
+                                  <option value="">:: Seleccionar ::</option>
+                                  <option value="1"  >Dentro de límites normales. Sin lesiones que impresionen patológicas.</option>
+                                  <option value="2"  >Presenta múltiples lesiones sin compromiso hemodinámico anterógrado.</option>
+                                  <option value="3"  >Presenta incremento del espesor íntima media.</option>
+                                  <option value="4"  >Presenta recorrido tortuoso que genera flujo turbulento.</option>
+                                  <option value="-1"  >Otras.</option>
+                              </select>
+                            </div>
+                            
+                            <div class="col-sm-6 boxComentario">
+                                <h5>Comentario:</h5>
+                                <textarea class="form-control" name="comentarioDer" data-id="1"></textarea>
+                            </div>
+                        </div> <!-- FIN - ITEM INFORME -->
+                        <hr>
+                        <div class="form-group boxInforme">
+                              <label class="col-sm-2 control-label">Espesor &Iacute;ntima <br>Media Derecha:</label>
+                              <div class="col-sm-9" data-id="1">
+                                <input type="text" name="espIntMedDer" id="espIntMedDer" class="gradienteTracto campoNumerico" 
+                                   placeholder="mm" size="3" maxlength="5" value="">
+                                <label>mm</label>
+                              </div>   
+                        </div>
+                        <hr>    
+                        <div class="form-group boxInforme">
+                            <label class="col-sm-2 control-label">Carotida Interna Derecha:</label>
+                            <div class="col-sm-9" data-id="2">
+                              <div>
+                                <input class="carIntDer" type="radio" name="carIntDer"
+                                value="0"  > 
+                                <label style="font-weight: normal; display: inline;">Se presenta libre de lesiones visibles y hemodinámicamente mesurables.</label>
+                                <br/>                                    
+                                <input class="carIntDer carLesiones" type="radio" name="carIntDer"
+                                value="1"  > 
+                                <label style="font-weight: normal; display: inline;">Se observa lesión: </label><br/>
+                              </div>
+
+                              <div class="boxLesiones">
+                                <div>
+                                  <input class="carIntDerBox1 inputBox" type="radio" name="carIntDerBox1"
+                                  value="2"  > 
+                                  <label style="font-weight: normal; display: inline;">Estable</label><br/>
+                                  
+                                  <input class="carIntDerBox1 inputBox" type="radio" name="carIntDerBox1"
+                                  value="3"  > 
+                                  <label style="font-weight: normal; display: inline;">Inestable</label><br/>
+                                </div>
+                                <hr>
+
+                                <div>
+                                  <input class="carIntDerBox2 inputBox" type="radio" name="carIntDerBox2"
+                                  value="4"  > 
+                                  <label style="font-weight: normal; display: inline;">Localizada próxima a la bifurcación carotidea</label><br/>
+                                  
+                                  <input class="carIntDerBox2 inputBox" type="radio" name="carIntDerBox2"
+                                  value="5"  > 
+                                  <label style="font-weight: normal; display: inline;">Localizada en segmento medio</label><br/>
+
+                                  <input class="carIntDerBox2 inputBox" type="radio" name="carIntDerBox2"
+                                  value="6"  > 
+                                  <label style="font-weight: normal; display: inline;">Localizada en segmento distal</label><br/>
+                                </div>
+                                <hr>
+                                <div>
+                                  <input class="carIntDerBox3 inputBox" type="radio" name="carIntDerBox3"
+                                  value="7"  > 
+                                  <label style="font-weight: normal; display: inline;">Estenosis < 25% </label><br/>
+                                  
+                                  <input class="carIntDerBox3 inputBox" type="radio" name="carIntDerBox3"
+                                  value="8"  > 
+                                  <label style="font-weight: normal; display: inline;">Estenosis 25-50 %</label><br/>
+
+                                  <input class="carIntDerBox3 inputBox" type="radio" name="carIntDerBox3"
+                                  value="9"  > 
+                                  <label style="font-weight: normal; display: inline;">Estenosis > 60%</label><br/>
+                                </div>
+                              </div>
+                            </div>
+                            <div class="col-sm-1">
+                              <span aria-hidden="true" class="glyphicon glyphicon-remove clearData" title="Limpiar Datos" title="Limpiar Datos"></span>
+                            </div>
+                        </div> <!-- FIN - ITEM INFORME -->
+                        <hr>
+                        <div class="form-group boxInforme">
+                            <label class="col-sm-2 control-label">Carotida Externa Derecha:</label>
+                            <div class="col-sm-9" data-id="3">
+                              <div>
+                                <input class="carExtDer" type="radio" name="carExtDer"
+                                value="0"  > 
+                                <label style="font-weight: normal; display: inline;">Se presenta libre de lesiones visibles y hemodinámicamente mesurables.</label><br/>
+                                
+                                <input class="carExtDer carLesiones" type="radio" name="carExtDer"
+                                value="1"  > 
+                                <label style="font-weight: normal; display: inline;">Se observa lesión: </label><br/>
+                              </div>
+
+                              <div class="boxLesiones">
+                                <div>
+                                  <input class="carExtDerBox1 inputBox" type="radio" name="carExtDerBox1"
+                                  value="2"  > 
+                                  <label style="font-weight: normal; display: inline;">Estenosis < 25% </label><br/>
+                                  
+                                  <input class="carExtDerBox1 inputBox" type="radio" name="carExtDerBox1"
+                                  value="3"  > 
+                                  <label style="font-weight: normal; display: inline;">Estenosis 25-50 %</label><br/>
+
+                                  <input class="carExtDerBox1 inputBox" type="radio" name="carExtDerBox1"
+                                  value="4"  > 
+                                  <label style="font-weight: normal; display: inline;">Estenosis > 60%</label><br/>
+                                </div>
+                              </div>
+                            </div>
+                            <div class="col-sm-1">
+                              <span aria-hidden="true" class="glyphicon glyphicon-remove clearData" title="Limpiar Datos"></span>
+                            </div>
+                        </div> <!-- FIN - ITEM INFORME -->
+                        <hr>
+                        <div class="form-group boxInforme">
+                            <label class="col-sm-2 control-label">Carotida Común Izquierda:</label>
+                            <div class="col-sm-4" data-id="4">
+                              <select class="form-control" data-id="4" name="listCarComIzq">
+                                  <option value="">:: Seleccionar ::</option>
+                                  <option value="1"  >Dentro de límites normales. Sin lesiones que impresionen patológicas.</option>
+                                  <option value="2"  >Presenta múltiples lesiones sin compromiso hemodinámico anterógrado.</option>
+                                  <option value="3"  >Presenta incremento del espesor íntima media.</option>
+                                  <option value="4"  >Presenta recorrido tortuoso que genera flujo turbulento.</option>
+                                  <option value="-1"  >Otras.</option>
+                              </select>
+                            </div>
+                            <div class="col-sm-6 boxComentario">
+                                <h5>Comentario:</h5>
+                                <textarea class="form-control" name="comentarioIzq" data-id="4"></textarea>
+                            </div>
+                        </div> <!-- FIN - ITEM INFORME -->
+                        <hr>
+                        <div class="form-group boxInforme">
+                              <label class="col-sm-2 control-label">Espesor &Iacute;ntima <br>Media Izquierda:</label>
+                              <div class="col-sm-9" data-id="1">
+                                <input type="text" name="espIntMedIzq" id="espIntMedIzq" class="gradienteTracto campoNumerico" 
+                                   placeholder="mm" size="3" maxlength="5" value="">
+                                <label>mm</label>
+                              </div>   
+                        </div>
+                        <hr>
+                        <div class="form-group boxInforme">
+                            <label class="col-sm-2 control-label">Carotida Interna Izquierda:</label>
+                            <div class="col-sm-9" data-id="5">
+                              <div>
+                                <input class="carIntIzq" type="radio" name="carIntIzq"
+                                value="0"  > 
+                                <label style="font-weight: normal; display: inline;">Se presenta libre de lesiones visibles y hemodinámicamente mesurables.</label><br/>
+                                
+                                <input class="carIntIzq carLesiones" type="radio" name="carIntIzq"
+                                value="1"  > 
+                                <label style="font-weight: normal; display: inline;">Se observa lesión: </label><br/>
+                              </div>
+
+                              <div class="boxLesiones">
+                                <div>
+                                  <input class="carIntIzqBox1 inputBox" type="radio" name="carIntIzqBox1"
+                                  value="2"  > 
+                                  <label style="font-weight: normal; display: inline;">Estable</label><br/>
+                                  
+                                  <input class="carIntIzqBox1 inputBox" type="radio" name="carIntIzqBox1"
+                                  value="3"  > 
+                                  <label style="font-weight: normal; display: inline;">Inestable</label><br/>
+                                </div>
+                                <hr>
+
+                                <div>
+                                  <input class="carIntIzqBox2 inputBox" type="radio" name="carIntIzqBox2"
+                                  value="4"  > 
+                                  <label style="font-weight: normal; display: inline;">Localizada próxima a la bifurcación carotidea</label><br/>
+                                  
+                                  <input class="carIntIzqBox2 inputBox" type="radio" name="carIntIzqBox2"
+                                  value="5"  > 
+                                  <label style="font-weight: normal; display: inline;">Localizada en segmento medio</label><br/>
+
+                                  <input class="carIntIzqBox2 inputBox" type="radio" name="carIntIzqBox2"
+                                  value="6"  > 
+                                  <label style="font-weight: normal; display: inline;">Localizada en segmento distal</label><br/>
+                                </div>
+                                <hr>
+                                <div>
+                                  <input class="carIntIzqBox3 inputBox" type="radio" name="carIntIzqBox3"
+                                  value="7"  > 
+                                  <label style="font-weight: normal; display: inline;">Estenosis < 25% </label><br/>
+                                  
+                                  <input class="carIntIzqBox3 inputBox" type="radio" name="carIntIzqBox3"
+                                  value="8"  > 
+                                  <label style="font-weight: normal; display: inline;">Estenosis 25-50 %</label><br/>
+
+                                  <input class="carIntIzqBox3 inputBox" type="radio" name="carIntIzqBox3"
+                                  value="9"  > 
+                                  <label style="font-weight: normal; display: inline;">Estenosis > 60%</label><br/>
+                                </div>
+                              </div>
+                            </div>
+                            <div class="col-sm-1">
+                              <span aria-hidden="true" class="glyphicon glyphicon-remove clearData" title="Limpiar Datos"></span>
+                            </div>
+                        </div> <!-- FIN - ITEM INFORME -->
+                        <hr>
+                        <div class="form-group boxInforme">
+                            <label class="col-sm-2 control-label">Carotida Externa Izquierda:</label>
+                            <div class="col-sm-9" data-id="6">
+                              <div>
+                                <input class="carExtIzq" type="radio" name="carExtIzq"
+                                value="0"  > 
+                                <label style="font-weight: normal; display: inline;">Se presenta libre de lesiones visibles y hemodinámicamente mesurables.</label><br/>
+                                
+                                <input class="carExtIzq carLesiones" type="radio" name="carExtIzq"
+                                value="1"  > 
+                                <label style="font-weight: normal; display: inline;">Se observa lesión: </label><br/>
+                              </div>
+
+                              <div class="boxLesiones">
+                                <div>
+                                  <input class="carExtIzqBox1 inputBox" type="radio" name="carExtIzqBox1"
+                                  value="2"  > 
+                                  <label style="font-weight: normal; display: inline;">Estenosis < 25% </label><br/>
+                                  
+                                  <input class="carExtIzqBox1 inputBox" type="radio" name="carExtIzqBox1"
+                                  value="3"  > 
+                                  <label style="font-weight: normal; display: inline;">Estenosis 25-50 %</label><br/>
+
+                                  <input class="carExtIzqBox1 inputBox" type="radio" name="carExtIzqBox1"
+                                  value="4"  > 
+                                  <label style="font-weight: normal; display: inline;">Estenosis > 60%</label><br/>
+                                </div>
+                              </div>
+                            </div>
+                            <div class="col-sm-1">
+                              <span aria-hidden="true" class="glyphicon glyphicon-remove clearData" title="Limpiar Datos"></span>
+                            </div>
+                        </div> <!-- FIN - ITEM INFORME -->
+                        <hr>
+                        <div class="form-group boxInforme">
+                            <label class="col-sm-2 control-label">Arterias vertebrales:</label>
+                            <div class="col-sm-9" data-id="7">
+                              <div>
+                                <input class="artVertebrales" type="radio" name="artVertebrales"
+                                value="0"  > 
+                                <label style="font-weight: normal; display: inline;">Flujos conservados.</label><br/>
+                                
+                                <input class="artVertebrales carLesiones" type="radio" name="artVertebrales"
+                                value="1"  > 
+                                <label style="font-weight: normal; display: inline;">Disminución del flujo en arteria vertebral: </label><br/>
+                              </div>
+
+                              <div class="boxLesiones">
+                                <div>
+                                  <input class="artVertebralesBox1 inputBox" type="radio" name="artVertebralesBox1"
+                                  value="2"  > 
+                                  <label style="font-weight: normal; display: inline;">Izquierda </label><br/>
+                                  
+                                  <input class="artVertebralesBox1 inputBox" type="radio" name="artVertebralesBox1"
+                                  value="3"  > 
+                                  <label style="font-weight: normal; display: inline;">Derecha</label><br/>
+
+                                </div>
+                              </div>
+                            </div>
+                            <div class="col-sm-1">
+                              <span aria-hidden="true" class="glyphicon glyphicon-remove clearData" title="Limpiar Datos"></span>
+                            </div>
+                        </div> <!-- FIN - ITEM INFORME -->
+                        <hr>
+                        <div class="form-group boxInforme">
+                            <label class="col-sm-2 control-label">Imágenes agregadas y sugerencias:</label>
+                            <div class="col-sm-9" data-id="8">
+                              <div>
+                                <input class="sugerencias" type="radio" name="sugerencias"
+                                value="0"  > 
+                                <label style="font-weight: normal; display: inline;">Se aprecia alteración anatómica de la glándula tiroides, se sugiere su control por especialista.</label><br/>
+                                
+                                <input class="sugerencias" type="radio" name="sugerencias"
+                                value="1"  > 
+                                <label style="font-weight: normal; display: inline;">Este estudio Carotideo realizado amerita realizar estudio de mayor complejidad según criterio de su médico de cabecera.</label><br/>
+                              </div>
+                            </div>
+                            <div class="col-sm-1">
+                              <span aria-hidden="true" class="glyphicon glyphicon-remove clearData" title="Limpiar Datos"></span>
+                            </div>
+                        </div> <!-- FIN - ITEM INFORME -->
+                        <!-- Pre Informe -->
+                        <div class="panel panel-default">
+                            <div class="panel-heading">
+                                <h4 class="text-left">Informe</h4>
+                            </div>
+
+                            <div class="panel-body">
+                                <div class="boxPreInforme">
+                                    <div class="orden_1"></div>
+                                    <div class="orden_2"></div>
+                                    <div class="orden_3"></div>
+                                    <div class="orden_4"></div>
+                                    <div class="orden_5"></div>
+                                    <div class="orden_6"></div>
+                                    <div class="orden_7"></div>
+                                    <div class="orden_8"></div>
+                                </div>
+                            </div>
+                        </div> <!-- FIN - PANEL Pre Informe -->
+                      </div> <!-- FIN - PANEL FORM-->
+                  </form>
+
+            </div> <!-- FIN - PANEL PRINCIPAL -->
+
+            <div class="divBtns text-center">
+                <button class="btn btn-primary btnSubmit" type="submit" >
+                  <span id="ldgGuardar" class="glyphicon glyphicon-refresh glyphicon-refresh-animate"></span>
+                  <span id="spnGuardar">Guardar</span>
+                </button>
+                <a href="https://cardioprietohc.com/index.php/hClinica/verHClinica/7544" class="btn btn-default" role="button">Volver</a>
+            </div>
+
+        </div> <!-- Container -->
+
+        <div class="footer">
+        </div>
+
+        <script type="text/javascript" src="https://cardioprietohc.com/js/carotidas.js"></script>
+    </body>
+</html>
