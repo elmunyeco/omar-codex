@@ -23,6 +23,7 @@
     <div>
       <h1 class="text-2xl font-semibold text-slate-900">Doppler color de vasos del cuello</h1>
       <p class="text-sm text-slate-600">Análisis de espesor íntima-media (QIMT)</p>
+      <p class="text-sm text-slate-600">Quality Intima Media Thikness Analisys </p>
     </div>
     <div class="text-right text-sm text-slate-600">
       <div>Paciente: <span class="font-medium text-slate-900">{{ paciente.apellido }}, {{ paciente.nombre }}</span></div>
@@ -38,7 +39,7 @@
     </div>
   {% endif %}
 
-  <form method="post" class="grid gap-6 lg:grid-cols-[2fr,1fr]">
+  <form id="carotidas-form" method="post" class="grid gap-6 lg:grid-cols-[2fr,1fr]" @submit.prevent="submitForm($event)">
     {% csrf_token %}
     {{ form.historia }}
 
@@ -318,7 +319,10 @@
       </section>
 
       <div class="flex flex-wrap items-center gap-3">
-        <button type="submit" class="rounded-md bg-red-600 px-4 py-2 text-sm font-semibold text-white hover:bg-red-700">Guardar</button>
+        <button type="submit" class="rounded-md bg-red-600 px-4 py-2 text-sm font-semibold text-white hover:bg-red-700" :disabled="guardando">
+          <span x-show="!guardando">Guardar</span>
+          <span x-show="guardando">Guardando...</span>
+        </button>
         <a href="/historias/" class="text-sm text-slate-600 hover:text-slate-800">Volver</a>
       </div>
     </div>
@@ -402,6 +406,7 @@
       artVertebralesModo: '',
       artVertebralesLado: '',
       sugerencias: initial.sugerencias || '',
+      guardando: false,
       syncComDerText(event) {
         const option = event.target.options[event.target.selectedIndex];
         this.comDerText = option.value && option.value !== '0' ? option.text : '';
@@ -499,6 +504,37 @@
       },
       clearSugerencias() {
         this.sugerencias = '';
+      },
+      async submitForm(event) {
+        event.preventDefault();
+        if (this.guardando) return;
+        this.guardando = true;
+        const popup = window.open('', '_blank');
+        const form = event.target;
+        const formData = new FormData(form);
+        try {
+          const response = await fetch(form.action || window.location.href, {
+            method: 'POST',
+            headers: { 'X-Requested-With': 'XMLHttpRequest' },
+            body: formData
+          });
+          const data = await response.json();
+          if (response.ok && data.success) {
+            const url = `{% url 'carotidas:carotidas_imprimir' 0 0 %}`
+              .replace('/0/0/', `/${data.estudio_id}/${data.historia_id}/`);
+            if (popup) {
+              popup.location = url;
+            } else {
+              window.open(url, '_blank');
+            }
+          } else {
+            alert('Se produjo un error al guardar el estudio.');
+          }
+        } catch (e) {
+          alert('Se produjo un error al guardar el estudio.');
+        } finally {
+          this.guardando = false;
+        }
       },
       validateEspesor(side) {
         const expr = /^\d{1,2}$|^\d{1,2}\.\d{1,2}$/;

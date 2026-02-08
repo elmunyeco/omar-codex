@@ -1,0 +1,14 @@
+.venv/
+__pycache__/
+.env
+data/*
+!data/raw/
+!data/logs/
+!data/cache/
+data/raw/*
+!data/raw/.gitkeep
+data/logs/*
+!data/logs/.gitkeep
+data/cache/*
+!data/cache/.gitkeep
+*.tar.gz

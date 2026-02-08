@@ -169,6 +169,9 @@ def imprimir_estudio(request, estudio_id):
         'historia': estudio.historia,
         'conclusion': conclusion,
         'segmentos': segmentos,
+        'print_logo_path': "file:///home/eze/omar-codex/Scrap_cardioprietohc/data/raw/carotidas/assets/images/logo.jpg",
+        'print_site_text': "www.cardioprietohc.com",
+        'print_header_text': "Consultorio Cardiológico Doctor Omar Prieto",
     }
     
     return render(request, 'ecocardiograma/imprimir_estudio.html', context)

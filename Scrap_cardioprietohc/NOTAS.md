@@ -1,55 +1,38 @@
-# Notas rápidas (Scrap_cardioprietohc en omar-codex)
+# Notas consolidadas (Scrap_cardioprietohc)
 
-## Estado general
-- Scrape y almacenamiento en `data/raw/` (HTML, assets descargados en `data/raw/assets/`).
-- RAG se puede regenerar: `python -m scrap_cardioprietohc.cli rag-index --source data/raw --index data/cache/rag_index.pkl`.
-- Playwright headless en este entorno puede fallar por sandbox; usar curl/requests para bajar HTML/JS/CSS.
+## Pautas clave
+- Visualización prioritaria: reproducir layout/posiciones/colores/espaciados/componentes del sistema original; no cambiar UI salvo pedido explícito o mejora indiscutible.
+- Si faltan assets, obtenerlos antes de tocar plantillas.
+- No borrar ni mover archivos en `data/raw` sin aprobación; preservar HTML/JSON del scrape.
 
-## Carótidas (nuevoEstudio/7544)
-- HTML autenticado guardado: `data/raw/carotidas/carotidas_7544_authed.html`.
-- Assets descargados en `data/raw/carotidas/assets/`:
-  - CSS: `bootstrap.css`, `font-awesome.min.css`, `carotidas.css`
-  - JS: `jquery.min.js`, `carotidas.js`
-  - Imágenes: `logo.jpg`, `icono.png`
-- Formulario `#formCarotidas` (action `/index.php/carotidas/guardarInforme`):
-  - Hidden: `idHC=7544`, `idEstudio=0`, `idComDer=0`, `idComIzq=0`.
-  - Campos select + radios por arteria (carótida común/interna/externa derecha/izquierda, vertebrales, sugerencias) y comentarios; espesor íntima-media derecha/izquierda (`espIntMedDer/espIntMedIzq`) numéricos.
-  - No enviar nuevos estudios: el JS envía AJAX y abre `imprimirEstudio/{id}/{idHC}`; acá solo análisis.
-- JS (`carotidas.js`) comportamiento:
-  - `.btnSubmit` dispara submit; submit via AJAX POST serialize form; si `data.exito`, setea `idEstudio`; abre ventana de impresión; re-habilita botones; errores muestran `msjPaciente`.
-  - Selects muestran/ocultan comentario cuando valor es `-1`; actualizan pre-informe (`.orden_*`) con texto de opción + label.
-  - Radios limpian checkboxes y pre-informe; `clearData` borra radios y orden.
-  - Validación numérica en `.campoNumerico` (solo dígitos/punto/coma/backspace/etc.). `focusout` en `espIntMedDer/Izq`: reemplaza coma por punto; regex `^\d{1,2}$|^\d{1,2}\.\d{1,2}$`; alerta y limpia si inválido.
-  - Triggers iniciales para rellenar pre-informe según selección actual.
-- Layout:
-  - Bootstrap clásico; header con logo/link; panel “Datos del Paciente” (nombre Pirulin Pirulero, HC 07544, fecha 08/12/2025).
-  - Títulos “Doppler Color de Vasos del Cuello”, “Analisis de Espesor Intima media (QIMT)”, “Quality Intima Media Thikness Analisys”.
-  - Boxes de informe con selects/radios, comentarios, botón clear (glyphicon-remove), pre-informe a la derecha.
+## Configuración scraper
+- `.env`: BASE_URL (default https://cardioprietohc.com/), LOGIN_PATH (/index.php/login/validarUsuario), PACIENTES_PATH (/index.php/pacientes/index), HISTORIAS_PATH (/index.php/historias/index), USERNAME/PASSWORD, OUTPUT_DIR=data/raw.
+- client.py: urljoin, postea `usuario`/`pass`; si LOGIN_PATH vacío, acceso público.
+- crawlers: pacientes pagina hasta 3, guarda HTML numerado y assets; historias usa HISTORIAS_PATH y descarga assets.
+- pipelines: guarda JSON/HTML y assets en `data/raw/assets` sin borrar existentes.
 
-## Pendientes/Diferencias (para diseño nuevo)
-- Portar lógica de AJAX/validaciones a Tailwind/Alpine o stack elegido, sin alterar DB.
-- Mantener campos de tabla `carotidas` (ver esquema).
-- Definir estilo propio (paleta/espaciados) sin perder estructura del informe y pre-informe/imprimir.
+## Datos scrapeados
+- HTML/JSON: pacientes_list_1/2/3.html, pacientes_add.html, pacientes_edit_dni12.html, pacientes_search_dni12.html, pacientes.json, funciones.js (cache).
+- Assets: `data/raw/assets/` (css/js/img).
+- Headless: screenshots y HTML renderizado (páginas, búsqueda, alta sin enviar, edición) en `data/raw/screenshots*/` y `data/raw/rendered*`.
+- Índice RAG: `data/cache/rag_index.pkl` (generado sobre todo `data/raw`).
 
-## Explicación funcional (carótidas)
-- Propósito: completar un informe de “Doppler Color de Vasos del Cuello” (QIMT) por arteria y generar un PDF de estudio.
-- Datos de contexto: muestra nombre del paciente, HC, fecha del estudio.
-- Estructura del formulario (`#formCarotidas`):
-  - Hidden: idHC, idEstudio, idComDer, idComIzq (inicialmente 0).
-  - Por arteria:
-    - Carótida común Der/Izq: select con opciones (normal, lesiones sin compromiso, incremento de espesor, tortuosidad, otras). Si “Otras”, aparece textarea de comentario. Cada cambio actualiza el pre-informe (span `.orden_*`).
-    - Espesor íntima-media Der/Izq: input numérico (`espIntMedDer/Izq`), validación: solo números/punto/coma; regex `^\d{1,2}$|^\d{1,2}\.\d{1,2}$`, alerta si no cumple.
-    - Carótida interna/external Der/Izq: radios para estado general (libre de lesiones o con lesión). Si hay lesión, se activan radios secundarios (estabilidad, localización, grado de estenosis) agrupados en `.boxLesiones`; el JS compone frases en el pre-informe con las selecciones.
-    - Vertebrales y Sugerencias: radios con opciones; también se reflejan en el pre-informe.
-  - Botón clear (glyphicon-remove) en cada bloque: desmarca radios y limpia el pre-informe del bloque.
-  - Mensajes: `#msj` para feedback; loader/botones en `.divBtns` (contenedor de botones y spinner).
-- Comportamiento JS (`carotidas.js`):
-  - `.btnSubmit` llama a `$('#formCarotidas').submit()`.
-  - Submit: AJAX POST `$(this).serialize()` a `action` (`/carotidas/guardarInforme`); deshabilita botones, muestra “Guardando…”. Si `data.exito`, setea `idEstudio`; abre ventana `.../imprimirEstudio/{id}/{idHC}`; re-habilita botones. En error muestra mensaje y re-habilita.
-  - Selects: si valor `-1`, muestra textarea; siempre actualiza pre-informe con label+opción.
-  - Textareas comentario: agregan texto al pre-informe del orden correspondiente.
-  - Radios principales: si valor 0 (normal) o sugerencias, limpian checkboxes secundarios y actualizan pre-informe con el texto del label.
-  - Radios secundarios (`.boxLesiones .inputBox`): fuerzan selección “lesión” en el radio principal, suman frases según selección y actualizan pre-informe.
-  - ClearData: borra radios y el pre-informe de ese bloque.
-  - Triggers al cargar: ejecuta change/click en elementos ya seleccionados para poblar el pre-informe inicial.
-- Resultado: al guardar (sin recargar página) se persiste el estudio y se abre el PDF de impresión. No generar nuevos estudios en este entorno de análisis (solo lectura).
+## UI/UX original (Pacientes)
+- Sidebar: activo rojo #D9100C, fondo rgba(217,16,12,0.5), borde izq 5px, texto blanco.
+- Buscador: POST `/index.php/pacientes/buscador`, padding-left 40/padding-top 10, input width 40%, botón alta derecha (padding-right 150, icono plus).
+- Tabla: cols #/Nombre/Apellido/Editar/Eliminar; filas `.fila_<id>`, glyphicons; paginador en páginas 2/3.
+- Formularios: form-horizontal (label col-4 + input col-4) apilado; campos tipoDoc, numDoc, nombre, apellido, fechaNac (cálculo edad), sexo H/M, email, dirección, localidad, obraSocial, plan, afiliado, teléfono, celular, profesión, referente; mensajes éxito/error y acciones post-alta (ocultas).
+- JS: `funciones.js` con AJAX de alta/edición, buscador (reemplaza tbody y oculta paginador), eliminar fila, validación fecha/edad.
+- Colores: #D9100C, #d9534f, #428bca/#357ebd, #eee, blanco. Tipografía Bootstrap default; iconos FontAwesome+Glyphicons.
+
+## Cómo levantar
+- Sandbox/restringido: `codex --workspace /home/eze/culo/Scrap_cardioprietohc --sandbox-mode workspace-write --network-access restricted` y trabajar con data local; regenerar índice si hace falta.
+- Con red: `codex --workspace /home/eze/culo/Scrap_cardioprietohc --sandbox-mode workspace-write --network-access enabled`; luego `source .venv/bin/activate`, `python -m scrap_cardioprietohc.cli run --target pacientes`, `python -m scrap_cardioprietohc.cli rag-index --source data/raw --index data/cache/rag_index.pkl`.
+- Headless local: `python scrap_cardioprietohc/headless_capture.py` (sitio original) o `headless_capture_local.py` (localhost:8080, con ajustes de BASE_URL si aplica).
+
+## TODO / Issues (Pacientes Django vs scrape)
+- Campos: usar `numDoc` en lista; sexo `H/M` (no `M/F`).
+- Flujos: añadir eliminar en lista y feedback (buscar/errores), decidir GET vs POST/AJAX como original; considerar ocultar paginador en búsqueda.
+- Validaciones/UX: portar lo útil de `funciones.js` a Alpine/fetch (mensajes, reemplazo tbody, cálculo edad, estados post-alta).
+- Estilo: alinear sidebar/buscador/tabla/botones al layout original manteniendo Tailwind/Alpine; paleta acotada y consistencia.
+- Migrar scraper al repo Django (si aplica) sin `.venv` y recrear índice; actualizar rutas en notas.
