@@ -13,3 +13,11 @@
 ## Archivos clave
 - `hhcc/ecocardiograma/templates/ecocardiograma/imprimir_estudio.html`
 - `hhcc/ecocardiograma/views.py` (pasa `print_logo_path`, `print_site_text`, `print_header_text`).
+
+## Motilidad segmentaria (miniapp)
+- Archivo: `hhcc/ecocardiograma/segmentos.html`
+- Estado inicial: todos los segmentos inician en **Normal** (estado `1`).
+- Botón "Marcar Todos Normales":
+  - Inicia deshabilitado si todo está en Normal.
+  - Se habilita al cambiar cualquier segmento.
+  - Se vuelve a deshabilitar al marcar todo como Normal.
