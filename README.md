@@ -1,1 +1,0 @@
-Ahora vienen los estudios

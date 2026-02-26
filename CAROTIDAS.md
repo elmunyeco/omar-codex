@@ -1,4 +1,4 @@
-# CAROTIDAS (específico)
+# CARÓTIDAS / VASOS DEL CUELLO
 
 ## Legacy (sitio viejo)
 - Formulario: “Doppler Color de Vasos del Cuello” (`/index.php/carotidas/nuevoEstudio/{idHC}`).
@@ -34,7 +34,7 @@
 - Sub‑opciones solo visibles si se elige “Se observa lesión”.
 - Vertebrales: sub‑opciones Izq/Der solo si se elige “Disminución del flujo…”.
 - Pre‑informe en vivo con Alpine.
-- Botones “Limpiar” por bloque (interna/externa der/izq, vertebrales, sugerencias).
+- Botones “Limpiar” por bloque.
 - Validación espesor íntima‑media (regex + coma→punto).
 
 ### Modelo, form y helpers
@@ -49,6 +49,26 @@
 - `carotidas/migrations/0002_alter_carotidasestudio_*.py`
 - `main.0003` se aplicó `--fake` en sqlite por colisión de índices (`ind_hist_fecha_idx` ya existía).
 
+## Impresión PDF
+- Endpoint: `/carotidas/imprimir_estudio/<estudio_id>/<historia_id>/`.
+- Respuesta `Content-Type: application/pdf` y `Content-Disposition: inline`.
+- Se ocultan secciones sin datos (no imprime títulos vacíos).
+- Logo: `Scrap_cardioprietohc/data/raw/carotidas/assets/images/logo.jpg`.
+- Sitio en header: `www.cardioprietohc.com`.
+- Texto corregido sin errores ortográficos (p.ej. “Quality Intima Media Thickness Analysis”).
+- No se imprime “Consultorio Cardiológico Doctores Prieto”; usar “Consultorio Cardiológico Doctor Omar Prieto”.
+- WeasyPrint sin base_url para evitar `DisallowedHost`.
+- Submit AJAX: guarda y abre nueva ventana con el PDF; popup se abre antes del fetch.
+
+## Template base de impresión
+- Base común: `hhcc/main/templates/print_base.html`.
+- Parametrizable por contexto: `print_logo_path`, `print_site_text`, `print_header_text`.
+- Divisores suaves entre membrete/títulos y títulos/informe.
+- Usa `print.css` para estilos comunes.
+
+## Referencias legacy
+- PDF legacy descargado: `Scrap_cardioprietohc/data/raw/carotidas/imprimirEstudio_4512_7544.pdf`.
+
 ## Cómo probar rápido
 ```bash
 cd /home/eze/omar-codex/hhcc
@@ -62,39 +82,3 @@ http://localhost:8090/carotidas/1/nuevo/
 ## Nota de infraestructura
 - En sqlite ya existe una historia clínica demo con `id=1` para test.
 - `USE_SANDBOX_DB=1` en `hhcc/settings.py` usa sqlite en lugar de MySQL.
-
-
-
-## Impresión / PDF
-- Se agregó endpoint de impresión en `carotidas`:
-  - URL: `/carotidas/imprimir_estudio/<estudio_id>/<historia_id>/`
-  - Vista: `carotidas.views.imprimir_estudio`.
-  - Template: `hhcc/carotidas/templates/carotidas/imprimir_estudio.html`.
-- En `nuevo_estudio.html` el submit ahora es AJAX: guarda y abre una nueva ventana con la impresión.
-- PDF legacy descargado para referencia:
-  - `Scrap_cardioprietohc/data/raw/carotidas/imprimirEstudio_4512_7544.pdf`
-
-
-## Impresión (PDF)
-- La impresión ahora genera PDF con WeasyPrint (no HTML).
-- Se ocultan secciones sin datos: solo se renderiza lo completado.
-- Endpoint: `/carotidas/imprimir_estudio/<estudio_id>/<historia_id>/` devuelve `application/pdf`.
-
-- WeasyPrint sin base_url para evitar DisallowedHost en impresión.
-
-
-## Impresión PDF
-- Impresión PDF con WeasyPrint (no HTML).
-- Se ocultan secciones vacías.
-- Logo y site en header; texto sin errores ortográficos.
-- Submit AJAX abre ventana con el PDF.
-
-
-- Usa base común `hhcc/main/templates/print_base.html` para impresión.
-- Divisores suaves entre membrete/títulos y títulos/informe.
-
-
-- `print_base.html` es parametrizable (logo/site/header) vía contexto.
-
-
-- `print_base.html` carga `print.css` para estilos comunes.

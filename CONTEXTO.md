@@ -2,9 +2,9 @@
 
 ## Ubicaciones clave
 - Sandbox de trabajo: `/home/eze/omar-codex`.
-- Proyecto Django (sandbox editable): `/home/eze/omar-codex/hhcc` (apps: `main`, `ecocardiograma`, `carotidas`).
+- Proyecto Django (sandbox editable): `/home/eze/omar-codex/hhcc` (apps: `main`, `ecocardiograma`, `carotidas`, `ecostress`, `doppler`).
 - Proyecto Django “oficial” (solo lectura): `/home/eze/omar/hhcc`.
-- Scraper completo del sitio original: `/home/eze/culo/Scrap_cardioprietohc` (copia parcial en `/home/eze/omar-codex/Scrap_cardioprietohc`).
+- Scraper completo del sitio original: `/home/eze/omar-codex/Scrap_cardioprietohc`.
 - Dumps locales del server nuevo: `/home/eze/omar/scrap_local_8080/data/raw/`.
 
 ## Sistemas
@@ -14,7 +14,7 @@
 - Sitio nuevo: `http://localhost:8080` (sin auth, en el entorno local).
 
 ## Scraper del sitio viejo (resumen)
-- Config en `.env` de `/home/eze/culo/Scrap_cardioprietohc`:
+- Config en `.env` de `Scrap_cardioprietohc`:
   - `BASE_URL=https://cardioprietohc.com/`
   - `LOGIN_PATH=/index.php/login/validarUsuario`
   - `PACIENTES_PATH=/index.php/pacientes/index`
@@ -33,7 +33,7 @@
 - Scrape hecho con `curl` sin auth.
 
 ## Estado general del Django nuevo (sandbox)
-- URLs: raíz -> `main`, `/ecocardiograma/`, `/carotidas/`.
+- URLs: raíz -> `main`, `/ecocardiograma/`, `/carotidas/`, `/ecostress/`, `/doppler/`.
 - Se mantiene Tailwind/Alpine pero se busca replicar flujos del legacy.
 - Pendiente general: ajustar pacientes a `numDoc`, sexo `H/M`, eliminar, AJAX, validaciones, feedbacks.
 
@@ -47,50 +47,48 @@ cd /home/eze/omar-codex/hhcc
 USE_SANDBOX_DB=1 python manage.py runserver 0.0.0.0:8090
 ```
 
-## Próximos objetivos generales
-- Completar UI/flujo de pacientes con comportamiento legacy.
-- Integrar carótidas a las vistas clínicas cuando esté validado.
-- Mantener simplificación visual sin perder funcionalidad.
+## URLs de prueba (sandbox)
+- Carótidas: `http://localhost:8090/carotidas/1/nuevo/`
+- Ecostress: `http://localhost:8090/ecostress/1/nuevo/`
+- Doppler MMII arterial: `http://localhost:8090/doppler/1/nuevo/`
 
-
-
-## Impresión carótidas
-- Endpoint de impresión en sandbox: `/carotidas/imprimir_estudio/<estudio_id>/<historia_id>/`.
-- Template A4: `hhcc/carotidas/templates/carotidas/imprimir_estudio.html`.
-- Submit de carótidas usa AJAX y abre nueva ventana con la impresión.
-- PDF legacy descargado en `Scrap_cardioprietohc/data/raw/carotidas/imprimirEstudio_4512_7544.pdf`.
-
-
-## Impresión carótidas (PDF)
-- Impresión genera PDF via WeasyPrint y oculta secciones vacías.
-- Endpoint responde `application/pdf`.
-
-- WeasyPrint sin base_url en impresión carótidas para evitar DisallowedHost.
-
+## Impresión (global)
+- Base común de impresión: `hhcc/main/templates/print_base.html`.
+- CSS común: `hhcc/main/static/main/css/print.css` (cargado vía `file:///`).
+- Base parametrizable: `print_logo_path`, `print_site_text`, `print_header_text`.
 
 ## i18n global
 - Se fuerza idioma `es-ar` para todas las requests mediante middleware.
 - Archivo: `hhcc/hhcc/middleware.py` (`force_spanish_middleware`).
 - Registrado en `hhcc/hhcc/settings.py` (MIDDLEWARE).
 
-
-## Template base de impresión
-- Base común para informes: `hhcc/main/templates/print_base.html`.
-- Los informes PDF deberían extender esta base para layout homogéneo.
-
-
-## Base de impresión parametrizada
-- `print_base.html` ahora acepta variables `print_logo_path`, `print_site_text`, `print_header_text`.
-- Ecocardiograma y carótidas pasan estos valores desde sus vistas de impresión.
-- Plantillas de impresión deben extender `print_base.html` para homogeneidad.
-
-- Se creó `ECOCARDIOGRAMA.md` con el estado de impresión del módulo.
-
-
-- CSS común de impresión: `hhcc/main/static/main/css/print.css` (usado por print_base).
-
-
 ## Copia de /home/eze/culo
 - Se copió el scraper completo a `/home/eze/omar-codex/Scrap_cardioprietohc` (incluye data, assets, RAG, notas).
-- Se copiaron referencias: `RESUMEN_PARA_MI.md`, `TODO_culo.md`.
 - Se copiaron esquemas SQL: `esquema_nuevo_cardioprieto_2025-12-07.sql`, `esquema_viejo_cardioprieto_2025-12-07.sql`.
+
+## Pacientes (legacy UX) - resumen operativo
+- Sidebar activo rojo `#D9100C`, fondo `rgba(217,16,12,0.5)`, texto blanco, borde izq 5px.
+- Buscador: input + botón search + select filtro; padding-left 40, padding-top 10; botón alta a la derecha (padding-right 150, padding-top 30, icono plus 24px).
+- Tabla: cols #/Nombre/Apellido/Editar/Eliminar; filas `.fila_<id>` con glyphicons lápiz/cruz; paginador en páginas 2/3.
+- Form alta/edición: `form-horizontal`, grupos apilados (label col-xs-4, input col-xs-4).
+  Campos: tipoDoc, numDoc, nombre, apellido, fechaNac (dd/mm/yyyy con cálculo edad), sexo H/M, email, dirección, localidad, obraSocial, plan, afiliado, teléfono, celular, profesión, referente.
+- Mensajes `.msjPaciente`/`.msjError`, acciones `.btnOpcs` (ocultos por default), loader GIF.
+- Colores: `#D9100C`, `#d9534f`, `#428bca/#357ebd`, `#eee`, blanco. Tipografía Bootstrap; iconos FontAwesome + Glyphicons.
+- JS (`funciones.js`): AJAX alta/edición, buscador (reemplaza tbody y oculta paginador), eliminar filas, validación fecha/edad.
+
+## Scraper operativo (pacientes)
+- Base `https://cardioprietohc.com/` y paths login/pacientes/historias.
+- Credenciales en `.env` (omar/Corbis5).
+- Capturas: `data/raw/screenshots/nav_*.png`; HTML renderizado `data/raw/rendered/pacientes_page_*.html`.
+- Índice RAG: `data/cache/rag_index.pkl`.
+
+- Se creó `ECOSTRESS.md` con el detalle del módulo de Ecostrés (HTML, JS, CSS, campos, flujo).
+- Se creó `DOPPLER_MMII_ARTERIAL.md` con el detalle del módulo Doppler arterial de MMII (HTML, JS, CSS, campos, flujo).
+- Se implementó la app `ecostress` en Django (modelo, form, vistas, templates y migración inicial).
+- Se implementó la app `doppler` en Django (modelo, form, vistas, templates y migración inicial).
+
+
+- Se creó venv RAG en `Scrap_cardioprietohc/.venv_rag` con dependencias para reindexar.
+- RAG reindexado: `data/cache/rag_index.pkl`.
+
+- El índice RAG es único: `Scrap_cardioprietohc/data/cache/rag_index.pkl`. El venv solo sirve para reindexar, no crea catálogos separados.
