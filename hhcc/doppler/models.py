@@ -1,0 +1,60 @@
+from django.db import models
+
+from main.models import HistoriaClinica
+
+
+class DopplerEstudio(models.Model):
+    """
+    Doppler Color Arterial de Miembros Inferiores.
+    Basado en la tabla legacy `doppler`.
+    """
+
+    id_doppler = models.AutoField(db_column="idDoppler", primary_key=True)
+    historia = models.ForeignKey(
+        HistoriaClinica,
+        on_delete=models.CASCADE,
+        related_name="doppler_estudios",
+        db_column="idHC",
+    )
+    art_fem_comun_derecha = models.TextField(
+        db_column="artFemComunDerecha", null=True, blank=True
+    )
+    art_fem_superficial_derecha = models.TextField(
+        db_column="artFemSuperficialDerecha", null=True, blank=True
+    )
+    art_fem_profunda_derecha = models.TextField(
+        db_column="artFemProfundaDerecha", null=True, blank=True
+    )
+    art_poplitea_derecha = models.TextField(
+        db_column="artPopliteaDerecha", null=True, blank=True
+    )
+    art_infrapatelares_derecha = models.TextField(
+        db_column="artInfrapatelaresDerecha", null=True, blank=True
+    )
+    art_fem_comun_izquierda = models.TextField(
+        db_column="artFemComunIzquierda", null=True, blank=True
+    )
+    art_fem_superficial_izquierda = models.TextField(
+        db_column="artFemSuperficialIzquierda", null=True, blank=True
+    )
+    art_fem_profunda_izquierda = models.TextField(
+        db_column="artFemProfundaIzquierda", null=True, blank=True
+    )
+    art_poplitea_izquierda = models.TextField(
+        db_column="artPopliteaIzquierda", null=True, blank=True
+    )
+    art_infrapatelares_izquierda = models.TextField(
+        db_column="artInfrapatelaresIzquierda", null=True, blank=True
+    )
+    conclusion = models.TextField(db_column="conclusion", null=True, blank=True)
+
+    class Meta:
+        db_table = "doppler"
+        verbose_name = "Doppler arterial de miembros inferiores"
+        verbose_name_plural = "Doppler arterial de miembros inferiores"
+        indexes = [
+            models.Index(fields=["historia"], name="doppler_historia_idx")
+        ]
+
+    def __str__(self):
+        return f"Doppler MMII HC {self.historia_id} - Estudio {self.pk or 'nuevo'}"
