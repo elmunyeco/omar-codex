@@ -46,7 +46,7 @@ INSTALLED_APPS = [
     'ecocardiograma',
     'carotidas',
     'ecostress',
-    'doppler',
+    'mmii',
 ]
 
 MIDDLEWARE = [

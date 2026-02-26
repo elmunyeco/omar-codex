@@ -8,6 +8,9 @@
 - [x] Implementar app Django `ecostress` (modelo, form, vistas, templates, PDF).
 - [ ] Si se requiere, crear hasta 2 estudios en legacy para capturar variantes de impresión.
 
+## MMII
+- [x] Renombrar app `doppler` a `mmii` (urls, templates, assets, DB).
+
 ## RAG / Data
 - [x] Agregar PDF legacy de carótidas a `Scrap_cardioprietohc/data/raw/`.
 - [ ] Agregar cualquier otro PDF/HTML faltante al RAG.

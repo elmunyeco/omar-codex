@@ -1,11 +1,11 @@
 from django import forms
 
-from .models import DopplerEstudio
+from .models import MmiiEstudio
 
 
-class DopplerForm(forms.ModelForm):
+class MmiiForm(forms.ModelForm):
     class Meta:
-        model = DopplerEstudio
+        model = MmiiEstudio
         fields = [
             "historia",
             "art_fem_comun_derecha",

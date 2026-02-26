@@ -54,7 +54,7 @@ def nuevo_estudio(request, historia_id):
             if not estudio.fecha_estudio:
                 estudio.fecha_estudio = timezone.localdate()
             estudio.save()
-            messages.success(request, "Estudio de ecostress guardado.")
+            messages.success(request, "Estudio de ecostrés cardíaco guardado.")
             if request.headers.get("x-requested-with") == "XMLHttpRequest":
                 return JsonResponse(
                     {

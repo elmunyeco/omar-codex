@@ -38,6 +38,7 @@
     </div>
   </div>
 
+  <div id="ecostress-success" class="hidden rounded-md border border-emerald-200 bg-emerald-50 px-4 py-2 text-sm text-emerald-800"></div>
   {% if messages %}
     <div class="space-y-2">
       {% for message in messages %}
@@ -284,6 +285,11 @@
           });
           const data = await response.json();
           if (response.ok && data.success) {
+            const msg = document.getElementById('ecostress-success');
+            if (msg) {
+              msg.textContent = 'Estudio de ecostrés cardíaco guardado.';
+              msg.classList.remove('hidden');
+            }
             const url = `{% url 'ecostress:ecostress_imprimir' 0 0 %}`
               .replace('/0/0/', `/${data.estudio_id}/${data.historia_id}/`);
             if (popup) {

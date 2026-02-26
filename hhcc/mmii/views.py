@@ -8,8 +8,8 @@ from weasyprint import HTML
 
 from main.models import HistoriaClinica
 
-from .forms import DopplerForm
-from .models import DopplerEstudio
+from .forms import MmiiForm
+from .models import MmiiEstudio
 
 
 DEFAULT_ARTERIA = (
@@ -23,7 +23,7 @@ DEFAULT_CONCLUSION = "Estudio arterial de miembros inferiores dentro de límites
 
 def nuevo_estudio(request, historia_id):
     historia = get_object_or_404(HistoriaClinica, pk=historia_id)
-    estudio = DopplerEstudio.objects.filter(historia=historia).first()
+    estudio = MmiiEstudio.objects.filter(historia=historia).first()
 
     initial = {"historia": historia}
     if not estudio:
@@ -44,10 +44,10 @@ def nuevo_estudio(request, historia_id):
         )
 
     if request.method == "POST":
-        form = DopplerForm(request.POST, instance=estudio, initial=initial)
+        form = MmiiForm(request.POST, instance=estudio, initial=initial)
         if form.is_valid():
             estudio = form.save()
-            messages.success(request, "Estudio doppler guardado.")
+            messages.success(request, "Estudio doppler color de MMII guardado.")
             if request.headers.get("x-requested-with") == "XMLHttpRequest":
                 return JsonResponse(
                     {
@@ -56,15 +56,15 @@ def nuevo_estudio(request, historia_id):
                         "historia_id": historia.pk,
                     }
                 )
-            return redirect("doppler:doppler_nuevo", historia_id=historia.pk)
+            return redirect("mmii:mmii_nuevo", historia_id=historia.pk)
         if request.headers.get("x-requested-with") == "XMLHttpRequest":
             return JsonResponse({"success": False, "errors": form.errors}, status=400)
     else:
-        form = DopplerForm(instance=estudio, initial=initial)
+        form = MmiiForm(instance=estudio, initial=initial)
 
     return render(
         request,
-        "doppler/nuevo_estudio.html",
+        "mmii/nuevo_estudio.html",
         {
             "form": form,
             "historia": historia,
@@ -77,7 +77,7 @@ def nuevo_estudio(request, historia_id):
 
 
 def imprimir_estudio(request, estudio_id, historia_id):
-    estudio = get_object_or_404(DopplerEstudio, pk=estudio_id)
+    estudio = get_object_or_404(MmiiEstudio, pk=estudio_id)
     if estudio.historia_id != historia_id:
         return JsonResponse({"success": False, "error": "Historia clínica no coincide."}, status=404)
 
@@ -120,13 +120,13 @@ def imprimir_estudio(request, estudio_id, historia_id):
         "derecho_items": derecho_items,
         "izquierdo_items": izquierdo_items,
         "conclusion": non_empty(estudio.conclusion),
-        "print_logo_path": "file:///home/eze/omar-codex/Scrap_cardioprietohc/data/raw/doppler/assets/images/logo.jpg",
+        "print_logo_path": "file:///home/eze/omar-codex/Scrap_cardioprietohc/data/raw/mmii/assets/images/logo.jpg",
         "print_site_text": "www.cardioprieto.com",
         "print_header_text": "Consultorio Cardiológico Doctor Omar Prieto",
     }
-    html = render_to_string("doppler/imprimir_estudio.html", context)
+    html = render_to_string("mmii/imprimir_estudio.html", context)
     pdf = HTML(string=html).write_pdf()
-    filename = f"doppler_{estudio_id}_{historia_id}.pdf"
+    filename = f"mmii_{estudio_id}_{historia_id}.pdf"
     response = HttpResponse(pdf, content_type="application/pdf")
     response["Content-Disposition"] = f"inline; filename={filename}"
     return response

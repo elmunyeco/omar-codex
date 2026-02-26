@@ -22,5 +22,5 @@ urlpatterns = [
     path('ecocardiograma/', include('ecocardiograma.urls')),
     path('carotidas/', include('carotidas.urls')),
     path('ecostress/', include('ecostress.urls')),
-    path('doppler/', include('doppler.urls')),
+    path('mmii/', include('mmii.urls')),
 ]

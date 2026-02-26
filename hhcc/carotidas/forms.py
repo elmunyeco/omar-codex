@@ -6,6 +6,9 @@ from .models import CarotidasEstudio
 
 
 class CarotidasForm(forms.ModelForm):
+    esp_int_med_der = forms.CharField(required=False)
+    esp_int_med_izq = forms.CharField(required=False)
+
     class Meta:
         model = CarotidasEstudio
         fields = [

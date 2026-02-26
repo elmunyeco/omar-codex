@@ -1,9 +1,9 @@
-# DOPPLER COLOR ARTERIAL DE MIEMBROS INFERIORES
+# DOPPLER COLOR ARTERIAL DE MIEMBROS INFERIORES (MMII)
 
 ## Fuente / ubicación scrapeada
 - URL autenticada: `https://cardioprietohc.com/index.php/doppler/nuevoEstudio/7544`
-- HTML guardado: `Scrap_cardioprietohc/data/raw/doppler/doppler_7544_authed.html`
-- Assets: `Scrap_cardioprietohc/data/raw/doppler/assets/`
+- HTML guardado: `Scrap_cardioprietohc/data/raw/mmii/doppler_7544_authed.html`
+- Assets: `Scrap_cardioprietohc/data/raw/mmii/assets/`
 
 ## Header / branding (legacy)
 - Logo: `https://cardioprietohc.com/images/logo.jpg`
@@ -51,9 +51,9 @@ Conclusiones (max 500):
 ## CSS (legacy)
 - Usa `bootstrap.css`, `font-awesome.min.css` y `carotidas.css`.
 
-## Tabla legacy
-- `doppler`:
-  - `idDoppler` (PK)
+## Tabla legacy (renombrada)
+- `mmii` (antes `doppler`):
+  - `idMMII` (PK) (antes `idDoppler`)
   - `idHC` (FK historia)
   - `artFemComunDerecha`
   - `artFemSuperficialDerecha`
@@ -68,28 +68,30 @@ Conclusiones (max 500):
   - `conclusion`
 
 ## Implementación Django (sandbox)
-- App nueva: `hhcc/doppler` (registrada en `hhcc/hhcc/settings.py`).
+- App nueva: `hhcc/mmii` (registrada en `hhcc/hhcc/settings.py`).
 - URLs:
-  - Formulario: `/doppler/<historia_id>/nuevo/`
-  - PDF: `/doppler/imprimir_estudio/<estudio_id>/<historia_id>/`
-- Modelo: `DopplerEstudio` mapeado a tabla legacy `doppler`.
-  - PK: `id_doppler` → columna `idDoppler`.
+  - Formulario: `/mmii/<historia_id>/nuevo/`
+  - PDF: `/mmii/imprimir_estudio/<estudio_id>/<historia_id>/`
+- Modelo: `MmiiEstudio` mapeado a tabla `mmii`.
+  - PK: `id_mmii` → columna `idMMII`.
   - FK: `historia` → columna `idHC` (HistoriaClinica).
   - Campos textuales alineados a legacy para todas las arterias y conclusión.
 - Migraciones:
-  - `hhcc/doppler/migrations/0001_initial.py`
+  - `hhcc/mmii/migrations/0001_initial.py`
+  - `hhcc/mmii/migrations/0002_migrate_from_doppler.py` (migra data y elimina tabla `doppler`)
 - Form + template:
-  - Formulario Tailwind/Alpine en `hhcc/doppler/templates/doppler/nuevo_estudio.html`.
+  - Formulario Tailwind/Alpine en `hhcc/mmii/templates/mmii/nuevo_estudio.html`.
   - Defaults del legacy para todas las arterias y conclusión.
   - Submit AJAX abre popup antes del fetch (patrón de carótidas/ecostress).
+  - Mensaje de éxito se muestra en el mismo evento AJAX (sin recarga).
 - Impresión:
-  - `hhcc/doppler/templates/doppler/imprimir_estudio.html` extiende `print_base.html`.
-  - WeasyPrint en `doppler/views.py` (PDF inline).
+  - `hhcc/mmii/templates/mmii/imprimir_estudio.html` extiende `print_base.html`.
+  - WeasyPrint en `mmii/views.py` (PDF inline).
   - Secciones separadas para sistema derecho/izquierdo y conclusiones.
   - Fecha del estudio: `timezone.localdate()`.
 
 ## RAG
-- HTML y assets guardados en `Scrap_cardioprietohc/data/raw/doppler/`.
+- HTML y assets guardados en `Scrap_cardioprietohc/data/raw/mmii/`.
 - Índice reindexado: `Scrap_cardioprietohc/data/cache/rag_index.pkl`.
 
 ## Cómo probar rápido
@@ -99,5 +101,5 @@ USE_SANDBOX_DB=1 python manage.py runserver 0.0.0.0:8090
 ```
 URL:
 ```
-http://localhost:8090/doppler/1/nuevo/
+http://localhost:8090/mmii/1/nuevo/
 ```

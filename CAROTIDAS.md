@@ -43,6 +43,7 @@
   - helpers `com_der_texto()` y `com_izq_texto()`.
 - `CarotidasForm`:
   - normaliza coma→punto y convierte a `Decimal`, agrega error si inválido.
+  - override en form: `esp_int_med_der` / `esp_int_med_izq` como `CharField` para evitar error 400 en AJAX; conversión se mantiene en `clean()`.
 
 ### Migraciones y notas
 - `carotidas/migrations/0001_initial.py`
@@ -59,6 +60,7 @@
 - No se imprime “Consultorio Cardiológico Doctores Prieto”; usar “Consultorio Cardiológico Doctor Omar Prieto”.
 - WeasyPrint sin base_url para evitar `DisallowedHost`.
 - Submit AJAX: guarda y abre nueva ventana con el PDF; popup se abre antes del fetch.
+- Mensaje de éxito se muestra en el mismo evento AJAX (sin recarga).
 
 ## Template base de impresión
 - Base común: `hhcc/main/templates/print_base.html`.

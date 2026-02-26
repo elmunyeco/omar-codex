@@ -2,7 +2,7 @@
 
 ## Ubicaciones clave
 - Sandbox de trabajo: `/home/eze/omar-codex`.
-- Proyecto Django (sandbox editable): `/home/eze/omar-codex/hhcc` (apps: `main`, `ecocardiograma`, `carotidas`, `ecostress`, `doppler`).
+- Proyecto Django (sandbox editable): `/home/eze/omar-codex/hhcc` (apps: `main`, `ecocardiograma`, `carotidas`, `ecostress`, `mmii`).
 - Proyecto Django “oficial” (solo lectura): `/home/eze/omar/hhcc`.
 - Scraper completo del sitio original: `/home/eze/omar-codex/Scrap_cardioprietohc`.
 - Dumps locales del server nuevo: `/home/eze/omar/scrap_local_8080/data/raw/`.
@@ -33,7 +33,7 @@
 - Scrape hecho con `curl` sin auth.
 
 ## Estado general del Django nuevo (sandbox)
-- URLs: raíz -> `main`, `/ecocardiograma/`, `/carotidas/`, `/ecostress/`, `/doppler/`.
+- URLs: raíz -> `main`, `/ecocardiograma/`, `/carotidas/`, `/ecostress/`, `/mmii/`.
 - Se mantiene Tailwind/Alpine pero se busca replicar flujos del legacy.
 - Pendiente general: ajustar pacientes a `numDoc`, sexo `H/M`, eliminar, AJAX, validaciones, feedbacks.
 
@@ -47,10 +47,13 @@ cd /home/eze/omar-codex/hhcc
 USE_SANDBOX_DB=1 python manage.py runserver 0.0.0.0:8090
 ```
 
+## Nota DB
+- Si corrés con `USE_SANDBOX_DB=1`, también migrar con ese flag para evitar warnings.
+
 ## URLs de prueba (sandbox)
 - Carótidas: `http://localhost:8090/carotidas/1/nuevo/`
 - Ecostress: `http://localhost:8090/ecostress/1/nuevo/`
-- Doppler MMII arterial: `http://localhost:8090/doppler/1/nuevo/`
+- MMII arterial: `http://localhost:8090/mmii/1/nuevo/`
 
 ## Impresión (global)
 - Base común de impresión: `hhcc/main/templates/print_base.html`.
@@ -85,7 +88,9 @@ USE_SANDBOX_DB=1 python manage.py runserver 0.0.0.0:8090
 - Se creó `ECOSTRESS.md` con el detalle del módulo de Ecostrés (HTML, JS, CSS, campos, flujo).
 - Se creó `DOPPLER_MMII_ARTERIAL.md` con el detalle del módulo Doppler arterial de MMII (HTML, JS, CSS, campos, flujo).
 - Se implementó la app `ecostress` en Django (modelo, form, vistas, templates y migración inicial).
-- Se implementó la app `doppler` en Django (modelo, form, vistas, templates y migración inicial).
+- Se implementó la app `mmii` en Django (modelo, form, vistas, templates y migraciones de renombre desde `doppler`).
+- Renombre global `doppler` → `mmii`: app, URLs `/mmii/`, templates, assets y tabla DB.
+- `print_base.html` default site text: `www.cardioprieto.com`.
 
 
 - Se creó venv RAG en `Scrap_cardioprietohc/.venv_rag` con dependencias para reindexar.

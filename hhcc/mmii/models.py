@@ -3,17 +3,17 @@ from django.db import models
 from main.models import HistoriaClinica
 
 
-class DopplerEstudio(models.Model):
+class MmiiEstudio(models.Model):
     """
     Doppler Color Arterial de Miembros Inferiores.
-    Basado en la tabla legacy `doppler`.
+    Basado en la tabla legacy `doppler` (renombrada a `mmii`).
     """
 
-    id_doppler = models.AutoField(db_column="idDoppler", primary_key=True)
+    id_mmii = models.AutoField(db_column="idMMII", primary_key=True)
     historia = models.ForeignKey(
         HistoriaClinica,
         on_delete=models.CASCADE,
-        related_name="doppler_estudios",
+        related_name="mmii_estudios",
         db_column="idHC",
     )
     art_fem_comun_derecha = models.TextField(
@@ -49,12 +49,12 @@ class DopplerEstudio(models.Model):
     conclusion = models.TextField(db_column="conclusion", null=True, blank=True)
 
     class Meta:
-        db_table = "doppler"
-        verbose_name = "Doppler arterial de miembros inferiores"
-        verbose_name_plural = "Doppler arterial de miembros inferiores"
+        db_table = "mmii"
+        verbose_name = "MMII arterial de miembros inferiores"
+        verbose_name_plural = "MMII arterial de miembros inferiores"
         indexes = [
-            models.Index(fields=["historia"], name="doppler_historia_idx")
+            models.Index(fields=["historia"], name="mmii_historia_idx")
         ]
 
     def __str__(self):
-        return f"Doppler MMII HC {self.historia_id} - Estudio {self.pk or 'nuevo'}"
+        return f"MMII HC {self.historia_id} - Estudio {self.pk or 'nuevo'}"

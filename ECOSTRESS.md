@@ -83,11 +83,13 @@
   - La fecha se setea automáticamente al guardar (fecha actual). No es editable en formulario.
   - `tipo_apremio` inicia en `Físico` (sin opción `:: Seleccionar ::`).
   - Submit AJAX abre popup antes del fetch (patrón de carótidas).
+  - Mensaje de éxito se muestra en el mismo evento AJAX (sin recarga).
 - Impresión:
   - `hhcc/ecostress/templates/ecostress/imprimir_estudio.html` extiende `print_base.html`.
   - WeasyPrint en `ecostress/views.py` (PDF inline).
   - Oculta secciones vacías (solo imprime si hay contenido).
   - Incluye la fecha en el membrete y en “Datos del estudio”.
+  - Header usa `www.cardioprieto.com`.
 
 ## RAG
 - HTML y assets ya guardados en `Scrap_cardioprietohc/data/raw/ecostress/`.

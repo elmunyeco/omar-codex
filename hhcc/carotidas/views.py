@@ -20,7 +20,7 @@ def nuevo_estudio(request, historia_id):
         form = CarotidasForm(request.POST, instance=estudio, initial={"historia": historia})
         if form.is_valid():
             estudio = form.save()
-            messages.success(request, "Estudio de carótidas guardado.")
+            messages.success(request, "Estudio doppler de vasos de cuello guardado.")
             if request.headers.get("x-requested-with") == "XMLHttpRequest":
                 return JsonResponse(
                     {
