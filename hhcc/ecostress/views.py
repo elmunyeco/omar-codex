@@ -3,6 +3,8 @@ from django.http import HttpResponse, JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.template.loader import render_to_string
 from django.utils import timezone
+from django.utils.formats import date_format
+from main.utils import static_file_url
 
 from weasyprint import HTML
 
@@ -100,7 +102,7 @@ def imprimir_estudio(request, estudio_id, historia_id):
         if value:
             datos_estudio.append((label, value))
 
-    add_dato("Fecha del estudio:", estudio.fecha_estudio.strftime("%d/%m/%Y") if estudio.fecha_estudio else "")
+    add_dato("Fecha del estudio:", date_format(estudio.fecha_estudio, "j \\d\\e F \\d\\e Y") if estudio.fecha_estudio else "")
     add_dato("Indicacion del estudio:", estudio.indicacion_estudio)
     add_dato("Tipo de apremio:", estudio.tipo_apremio)
     add_dato("Medicacion al momento del estudio:", estudio.medicacion_momento_estudio)
@@ -166,9 +168,10 @@ def imprimir_estudio(request, estudio_id, historia_id):
         "datos_estudio": datos_estudio,
         "prueba_items": prueba_items,
         "texto_items": texto_items,
-        "print_logo_path": "file:///home/eze/omar-codex/Scrap_cardioprietohc/data/raw/carotidas/assets/images/logo.jpg",
+        "print_logo_path": static_file_url("main/images/logo.png"),
         "print_site_text": "www.cardioprieto.com",
         "print_header_text": "Consultorio Cardiológico Doctor Omar Prieto",
+        "print_css_path": static_file_url("main/css/print.css"),
     }
     html = render_to_string("ecostress/imprimir_estudio.html", context)
     pdf = HTML(string=html).write_pdf()

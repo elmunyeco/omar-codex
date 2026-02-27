@@ -10,10 +10,14 @@
 </head>
 <body>
   {% language 'es-ar' %}
-  {% with logo=print_logo_path|default:"file:///home/eze/omar-codex/Scrap_cardioprietohc/data/raw/carotidas/assets/images/logo.jpg" %}
+  {% with logo=print_logo_path|default:None %}
   <div class="header">
     <div>
-      <img class="logo" src="{{ logo }}" alt="{{ print_header_text|default:'Consultorio Cardiológico Doctor Omar Prieto' }}">
+      {% if logo %}
+        <img class="logo" src="{{ logo }}" alt="{{ print_header_text|default:'Consultorio Cardiológico Doctor Omar Prieto' }}">
+      {% else %}
+        <img class="logo" src="{% static 'main/images/logo.png' %}" alt="{{ print_header_text|default:'Consultorio Cardiológico Doctor Omar Prieto' }}">
+      {% endif %}
     </div>
     <div style="font-size:12px; text-align:right;">
       <div>{{ print_site_text|default:"www.cardioprieto.com" }}</div>
@@ -34,6 +38,16 @@
   <hr class="divider-soft">
 
   {% block content %}{% endblock %}
+
+  <br><br>
+  <hr class="divider-soft">
+  <div class="footer">
+    <div class="footer-row">
+      <div>Emitido {% now "d/m/Y" %}</div>
+      <div>Dr. Omar Prieto</div>
+    </div>
+    <div class="footer-note">cardiologo</div>
+  </div>
   {% endlanguage %}
 </body>
 </html>

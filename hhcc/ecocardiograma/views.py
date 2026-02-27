@@ -8,6 +8,7 @@ from django.conf import settings
 from django.db import transaction
 from django.views.decorators.csrf import csrf_exempt
 from django.utils import timezone
+from main.utils import static_file_url
 from django.forms.models import model_to_dict
 from django.template.loader import render_to_string
 from weasyprint import HTML
@@ -643,11 +644,11 @@ def imprimir_estudio(request, estudio_id):
         'bidimensional_rows': bidimensional_rows,
         'doppler_rows': doppler_rows,
         'conclusion_lines': conclusion_lines,
-        'print_logo_path': "file:///home/eze/omar-codex/hhcc/main/static/main/images/logo.png",
+        'print_logo_path': static_file_url("main/images/logo.png"),
         'print_site_text': "www.cardioprieto.com",
         'print_header_text': "Consultorio Cardiológico Doctor Omar Prieto",
-        'print_css_path': "file:///home/eze/omar-codex/hhcc/main/static/main/css/print.css",
-        'print_segmentos_path': "file:///home/eze/omar-codex/hhcc/ecocardiograma/static/ecocardiograma/images/segmentos.png",
+        'print_css_path': static_file_url("main/css/print.css"),
+        'print_segmentos_path': static_file_url("ecocardiograma/images/segmentos.png"),
     }
     
     html = render_to_string("ecocardiograma/imprimir_estudio.html", context)

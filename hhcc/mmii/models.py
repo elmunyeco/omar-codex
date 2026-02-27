@@ -1,4 +1,5 @@
 from django.db import models
+from django.utils import timezone
 
 from main.models import HistoriaClinica
 
@@ -47,6 +48,7 @@ class MmiiEstudio(models.Model):
         db_column="artInfrapatelaresIzquierda", null=True, blank=True
     )
     conclusion = models.TextField(db_column="conclusion", null=True, blank=True)
+    fecha_estudio = models.DateField(default=timezone.localdate)
 
     class Meta:
         db_table = "mmii"

@@ -17,11 +17,11 @@
 {% block meta %}
   <div>Nombre y Apellido: {{ paciente.nombre }} {{ paciente.apellido }}</div>
   <div>Historia Clínica: {{ estudio.historia.id|stringformat:"05d" }}</div>
-  <div>Fecha de Estudio: {{ estudio.fecha|date:"d/m/Y" }}</div>
+  <div>Fecha de Estudio: {{ estudio.fecha|date:"j \d\e F \d\e Y" }}</div>
 {% endblock %}
 
 {% block titles %}
-  <h1>ESTUDIO ECOCARDIOGRÁFICO DOPPLER COLOR CON EVALUACIÓN DE DEFORMACIÓN MIOCÁRDICA</h1>
+  <h1>Estudio ecocardiográfico doppler color con evaluación de deformación miocárdica</h1>
 {% endblock %}
 
 {% block content %}
@@ -39,7 +39,7 @@
             </div>
             <div class="dato">
                 <span class="dato-etiqueta">Fecha de Estudio:</span>
-                <span>{{ estudio.fecha|date:"d/m/Y" }}</span>
+                <span>{{ estudio.fecha|date:"j \d\e F \d\e Y" }}</span>
             </div>
             <div class="dato">
                 <span class="dato-etiqueta">Peso:</span>

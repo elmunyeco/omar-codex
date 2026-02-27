@@ -2,6 +2,7 @@ from django.contrib import messages
 from django.http import HttpResponse, JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.utils import timezone
+from main.utils import static_file_url
 from django.template.loader import render_to_string
 
 from weasyprint import HTML
@@ -87,12 +88,13 @@ def imprimir_estudio(request, estudio_id, historia_id):
         "estudio": estudio,
         "historia": estudio.historia,
         "paciente": estudio.historia.paciente,
-        "fecha_estudio": timezone.localdate(),
+        "fecha_estudio": estudio.fecha_estudio or timezone.localdate(),
         "informe_items": informe_items,
         "espesor_items": espesor_items,
-        "print_logo_path": "file:///home/eze/omar-codex/Scrap_cardioprietohc/data/raw/carotidas/assets/images/logo.jpg",
+        "print_logo_path": static_file_url("main/images/logo.png"),
         "print_site_text": "www.cardioprietohc.com",
         "print_header_text": "Consultorio Cardiológico Doctor Omar Prieto",
+        "print_css_path": static_file_url("main/css/print.css"),
     }
     html = render_to_string("carotidas/imprimir_estudio.html", context)
     pdf = HTML(string=html).write_pdf()

@@ -78,6 +78,7 @@
 - Fix: en `imprimir_estudio` se corrigió el armado de `segmentos_detalle/segmentos_colores` para que el SVG no quede en blanco.
 - Ajuste: tabla de segmentos compacta debajo del gráfico, con nombre y estado en dos líneas por celda.
 - Se quitó la firma final (línea + “Dr. Omar Prieto / Cardiólogo”) del PDF.
+- Pie de página común (en `print_base.html`): 2 renglones en blanco, línea divisoria, “Emitido DD/MM/AAAA” a la izquierda, “Dr. Omar Prieto” a la derecha, y “cardiologo” alineado a la derecha debajo.
 
 ## UI (formulario)
 - Botón principal: texto “Guardar” (antes “Guardar e Imprimir”).

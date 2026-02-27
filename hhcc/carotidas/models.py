@@ -1,4 +1,5 @@
 from django.db import models
+from django.utils import timezone
 
 from main.models import HistoriaClinica
 
@@ -30,6 +31,7 @@ class CarotidasEstudio(models.Model):
     esp_int_med_izq = models.DecimalField(
         max_digits=4, decimal_places=2, null=True, blank=True
     )
+    fecha_estudio = models.DateField(default=timezone.localdate)
 
     COMUN_CHOICES = {
         1: "Dentro de límites normales. Sin lesiones que impresionen patológicas.",
