@@ -271,6 +271,35 @@
             text-align: center;
             margin: 20px 0;
         }
+
+        body.embed {
+            margin: 0;
+            background-color: transparent;
+        }
+
+        body.embed .container {
+            max-width: none;
+            margin: 0;
+            border-radius: 0;
+            box-shadow: none;
+            padding: 0;
+            background-color: transparent;
+        }
+
+        body.embed .panel {
+            border: 0;
+            border-radius: 0;
+            margin: 0;
+            background: transparent;
+        }
+
+        body.embed .panel-heading {
+            display: none;
+        }
+
+        body.embed .panel-body {
+            padding: 12px 0 0 0;
+        }
     </style>
 </head>
 <body>
@@ -487,6 +516,9 @@
     </div>
 
     <script>
+        function isEmbed() {
+            return new URLSearchParams(window.location.search).get('embed') === '1';
+        }
         // Estados de los segmentos
         let estados = {};
         for(let i = 1; i <= 16; i++) {
@@ -507,6 +539,12 @@
             // Actualizar visualización SVG
             actualizarVisualizacionSVG(segmento, nuevoEstado);
             actualizarBotonMarcarTodos();
+            if (typeof window.__ecoSegmentosSync === 'function') {
+                window.__ecoSegmentosSync(estados);
+            }
+            if (window.parent && window.parent !== window && typeof window.parent.__ecoSegmentosSync === 'function') {
+                window.parent.__ecoSegmentosSync(estados);
+            }
             
             console.log(`Segmento ${segmento}: Estado ${nuevoEstado}`);
         }
@@ -582,12 +620,21 @@
         document.addEventListener('DOMContentLoaded', function() {
             console.log('Sistema híbrido imagen + SVG paths inicializado');
             console.log('16 segmentos - Interacción solo con mouse');
+
+            if (isEmbed()) {
+                document.body.classList.add('embed');
+            }
             
             // Inicializar todos los segmentos en estado 1 (Normal)
             for(let i = 1; i <= 16; i++) {
                 actualizarVisualizacionSVG(i, 1);
             }
             actualizarBotonMarcarTodos();
+            window.__ecoSegmentosGet = obtenerDatosSegmentos;
+            window.__ecoSegmentosSet = cargarEstados;
+            if (typeof window.__ecoSegmentosReady === 'function') {
+                window.__ecoSegmentosReady();
+            }
         });
     </script>
 </body>

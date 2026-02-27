@@ -1,6 +1,6 @@
 {# Archivo: ecocardiograma/templates/ecocardiograma/eco_form_optimizado.html #}
 {% extends 'base.html' %}
-{% load static %}
+{% load static ecocardiograma_tags %}
 
 {% block title %}Sistema de Ecocardiograma{% endblock %}
 
@@ -56,12 +56,26 @@ document.addEventListener('alpine:init', () => {
         
         // Conclusiones
         conclusiones: {
+            situs: '',
+            comentario_situs: '',
+            vasos_normoimplantados: '',
+            comentario_vasos: '',
+            concordancia_atrioventricular: '',
+            comentario_concordancia: '',
             auricula_izq: [],
             ventriculo_izq: [],
             funcion_sistolica: '',
             funcion_diastolica: '',
             motilidad_segmentaria: '',
             comentario_motilidad: '',
+            valvula_aortica: [],
+            comentario_valvula_aortica: '',
+            valvula_mitral: [],
+            comentario_valvula_mitral: '',
+            valvula_tricuspide: [],
+            comentario_valvula_tricuspide: '',
+            valvula_pulmonar: [],
+            comentario_valvula_pulmonar: '',
             pericardio: '',
             comentario_pericardio: '',
             defectos_congenitos: '',
@@ -108,6 +122,16 @@ document.addEventListener('alpine:init', () => {
             { valor: '6', texto: 'Hipertrofia excéntrica' },
             { valor: '7', texto: 'Con hipertrofia del septum interventricular' }
         ],
+
+        opcionesValvula: [
+            { valor: '1', texto: 'Dentro de límites normales' },
+            { valor: '2', texto: 'Insuficiencia de grado leve' },
+            { valor: '3', texto: 'Insuficiencia de grado moderado' },
+            { valor: '4', texto: 'Insuficiencia de grado severo' },
+            { valor: '5', texto: 'Estenosis de grado leve' },
+            { valor: '6', texto: 'Estenosis de grado moderado' },
+            { valor: '7', texto: 'Estenosis de grado severo' }
+        ],
         
         // Estados de segmentos
         estadosSegmentos: {
@@ -149,6 +173,12 @@ document.addEventListener('alpine:init', () => {
         // Inicialización
         inicializar(historiaId, estudioId, datosEstudio, datosConclusion, datosSegmentos) {
             this.historiaId = historiaId;
+            if (!this.historiaId || this.historiaId === 'null' || this.historiaId === 'None') {
+                const rootId = this.$root?.dataset?.historiaId;
+                if (rootId) {
+                    this.historiaId = rootId;
+                }
+            }
             
             if (estudioId && estudioId !== '0') {
                 this.estudio.id = estudioId;
@@ -161,17 +191,21 @@ document.addEventListener('alpine:init', () => {
             if (datosConclusion && datosConclusion !== 'null') {
                 Object.assign(this.conclusiones, datosConclusion);
                 // Convertir strings de conclusiones múltiples a arrays
-                if (this.conclusiones.auricula_izq && typeof this.conclusiones.auricula_izq === 'string') {
-                    this.conclusiones.auricula_izq = this.conclusiones.auricula_izq.split(',');
-                } else if (!Array.isArray(this.conclusiones.auricula_izq)) {
-                    this.conclusiones.auricula_izq = [];
-                }
-                
-                if (this.conclusiones.ventriculo_izq && typeof this.conclusiones.ventriculo_izq === 'string') {
-                    this.conclusiones.ventriculo_izq = this.conclusiones.ventriculo_izq.split(',');
-                } else if (!Array.isArray(this.conclusiones.ventriculo_izq)) {
-                    this.conclusiones.ventriculo_izq = [];
-                }
+                const camposArray = [
+                    'auricula_izq',
+                    'ventriculo_izq',
+                    'valvula_aortica',
+                    'valvula_mitral',
+                    'valvula_tricuspide',
+                    'valvula_pulmonar'
+                ];
+                camposArray.forEach((campo) => {
+                    if (this.conclusiones[campo] && typeof this.conclusiones[campo] === 'string') {
+                        this.conclusiones[campo] = this.conclusiones[campo].split(',');
+                    } else if (!Array.isArray(this.conclusiones[campo])) {
+                        this.conclusiones[campo] = [];
+                    }
+                });
             }
             
             if (datosSegmentos && datosSegmentos !== '[]') {
@@ -180,12 +214,23 @@ document.addEventListener('alpine:init', () => {
                 });
             }
             
-            // Inicializar segmentos vacíos
+            // Inicializar segmentos vacíos (legacy: Normal por defecto)
             for (let i = 1; i <= 16; i++) {
                 if (!this.segmentos[i]) {
-                    this.segmentos[i] = '0';
+                    this.segmentos[i] = '1';
                 }
             }
+
+            // Hook para recibir cambios desde la miniapp (iframe)
+            window.__ecoSegmentosSync = (data) => {
+                if (!data) return;
+                const normalizados = {};
+                for (const [k, v] of Object.entries(data)) {
+                    normalizados[k] = String(v);
+                }
+                this.segmentos = normalizados;
+                this.debouncedSave();
+            };
             
             // Realizar cálculos iniciales
             this.$nextTick(() => {
@@ -196,14 +241,38 @@ document.addEventListener('alpine:init', () => {
                 this.calcularGradiente('tracto');
                 this.calcularGradiente('mitral');
                 this.calcularGradiente('tricuspidea');
+                this.inicializarIframeSegmentos();
             });
         },
 
-        // Inicializar sistema de segmentos
-        inicializarSegmentos() {
-            this.$nextTick(() => {
-                this.dibujarSegmentos();
-            });
+        // Integración miniapp de segmentos
+        inicializarIframeSegmentos() {
+            const frame = document.getElementById('segmentosFrame');
+            if (!frame) return;
+            const syncToIframe = () => {
+                const win = frame.contentWindow;
+                if (win && typeof win.__ecoSegmentosSet === 'function') {
+                    win.__ecoSegmentosSet(this.segmentos);
+                }
+            };
+            if (frame.contentDocument?.readyState === 'complete') {
+                syncToIframe();
+            } else {
+                frame.addEventListener('load', syncToIframe, { once: true });
+            }
+        },
+
+        syncSegmentosDesdeMiniapp() {
+            const frame = document.getElementById('segmentosFrame');
+            const win = frame?.contentWindow;
+            if (!win || typeof win.__ecoSegmentosGet !== 'function') return;
+            const data = win.__ecoSegmentosGet();
+            if (!data) return;
+            const normalizados = {};
+            for (const [k, v] of Object.entries(data)) {
+                normalizados[k] = String(v);
+            }
+            this.segmentos = normalizados;
         },
         
         // Cálculos automáticos
@@ -395,6 +464,13 @@ document.addEventListener('alpine:init', () => {
         },
         
         async guardarDatos(completo = false) {
+            if (!this.historiaId || this.historiaId === 'null' || this.historiaId === 'None') {
+                this.mostrarMensaje('Error al guardar el estudio (historia inválida)', 'error');
+                return { success: false };
+            }
+            // Sincronizar segmentos desde miniapp antes de enviar
+            this.syncSegmentosDesdeMiniapp();
+
             // Preparar datos para envío
             const payload = {
                 historia_id: this.historiaId,
@@ -407,7 +483,19 @@ document.addEventListener('alpine:init', () => {
                         : this.conclusiones.auricula_izq,
                     ventriculo_izq: Array.isArray(this.conclusiones.ventriculo_izq) 
                         ? this.conclusiones.ventriculo_izq.join(',') 
-                        : this.conclusiones.ventriculo_izq
+                        : this.conclusiones.ventriculo_izq,
+                    valvula_aortica: Array.isArray(this.conclusiones.valvula_aortica)
+                        ? this.conclusiones.valvula_aortica.join(',')
+                        : this.conclusiones.valvula_aortica,
+                    valvula_mitral: Array.isArray(this.conclusiones.valvula_mitral)
+                        ? this.conclusiones.valvula_mitral.join(',')
+                        : this.conclusiones.valvula_mitral,
+                    valvula_tricuspide: Array.isArray(this.conclusiones.valvula_tricuspide)
+                        ? this.conclusiones.valvula_tricuspide.join(',')
+                        : this.conclusiones.valvula_tricuspide,
+                    valvula_pulmonar: Array.isArray(this.conclusiones.valvula_pulmonar)
+                        ? this.conclusiones.valvula_pulmonar.join(',')
+                        : this.conclusiones.valvula_pulmonar
                 },
                 segmentos: this.segmentos,
                 completo: completo
@@ -456,10 +544,6 @@ document.addEventListener('alpine:init', () => {
     .comentarioFinal h4, 
     .conclusionesB h4 {
         @apply font-bold;
-    }
-    
-    .tituloPrincipal {
-        @apply underline mx-auto my-8 text-center text-xl;
     }
     
     .lblUnidad {
@@ -535,7 +619,8 @@ document.addEventListener('alpine:init', () => {
 {% block content %}
 <div 
     x-data="ecocardiogramaSistema" 
-    x-init="inicializar('{{ historia.id }}', '{{ estudio.id|default:'0' }}', {{ estudio|default:'null'|safe }}, {{ conclusion|default:'null'|safe }}, {{ segmentos|default:'[]'|safe }})"
+    x-init="inicializar('{{ historia.id }}', '{{ estudio_id|default:'0' }}', JSON.parse('{{ estudio|default:'null'|to_json|escapejs }}'), JSON.parse('{{ conclusion|default:'null'|to_json|escapejs }}'), JSON.parse('{{ segmentos|default:'[]'|to_json|escapejs }}'))"
+    data-historia-id="{{ historia.id }}"
     class="mt-12"
 >
     <!-- CSRF Token -->
@@ -562,6 +647,7 @@ document.addEventListener('alpine:init', () => {
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4"></path>
                     </svg>
                 </button>
+                {# 
                 <a :href="`{% url 'ecocardiograma:imprimir_estudio' 0 %}`.replace('0', estudio.id || 0)" 
                    target="_blank" 
                    class="text-blue-600 hover:text-blue-800" 
@@ -571,6 +657,7 @@ document.addEventListener('alpine:init', () => {
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"></path>
                     </svg>
                 </a>
+                #}
             </div>
         </div>
         <div class="p-6">
@@ -626,7 +713,11 @@ document.addEventListener('alpine:init', () => {
         </div>
     </div>
 
-    <h4 class="tituloPrincipal">Estudio ecocardiográfico doppler color con evaluación de deformación miocárdica</h4>
+    <div class="w-full flex justify-center my-8">
+        <h4 class="underline text-center text-2xl font-semibold tracking-wide text-gray-800 w-full max-w-3xl">
+            Estudio ecocardiográfico doppler color con evaluación de deformación miocárdica
+        </h4>
+    </div>
 
     <!-- Sistema de pestañas -->
     <div class="border-b border-gray-200">
@@ -936,109 +1027,14 @@ document.addEventListener('alpine:init', () => {
                 <div class="bg-gray-200 px-6 py-4">
                     <h4 class="text-center text-lg font-semibold">Análisis de Motilidad Segmentaria</h4>
                 </div>
-                
-                <div class="p-6 text-center">
-                    <div class="mb-4">
-                        <label class="inline-flex items-center">
-                            <input type="checkbox" @change="marcarTodoNormal($event.target.checked)" class="form-checkbox h-5 w-5 text-blue-600">
-                            <span class="ml-2 text-gray-700">Marcar todo como normal</span>
-                        </label>
-                    </div>
-                    
-                    <!-- Contenedor de imagen con áreas clicables -->
-                    <div class="relative inline-block mx-auto" x-ref="segmentosContainer">
-                        <img src="{% static 'ecocardiograma/images/segmentos.png' %}" 
-                             alt="Segmentos Cardíacos" 
-                             class="max-w-full h-auto"
-                             @load="inicializarSegmentos()"
-                             x-ref="segmentosImagen">
-                        
-                        <!-- Canvas para dibujar los segmentos coloreados -->
-                        <canvas x-ref="segmentosCanvas" 
-                                class="absolute top-0 left-0 pointer-events-none"
-                                style="width: 100%; height: 100%;"></canvas>
-                        
-                        <!-- Áreas clicables definidas con coordenadas exactas -->
-                        <div class="segment-area" @click="abrirModalSegmento(1)" 
-                             style="left: 8.2%; top: 19.7%; width: 5.9%; height: 4.6%;" title="Segmento 1"></div>
-                        <div class="segment-area" @click="abrirModalSegmento(2)" 
-                             style="left: 1.6%; top: 22.2%; width: 6.8%; height: 4.6%;" title="Segmento 2"></div>
-                        <div class="segment-area" @click="abrirModalSegmento(3)" 
-                             style="left: 53.5%; top: 35.6%; width: 4.5%; height: 12.1%;" title="Segmento 3"></div>
-                        <div class="segment-area" @click="abrirModalSegmento(4)" 
-                             style="left: 28.2%; top: 35.6%; width: 4.5%; height: 5.6%;" title="Segmento 4"></div>
-                        <div class="segment-area" @click="abrirModalSegmento(5)" 
-                             style="left: 53.5%; top: 5.1%; width: 4.5%; height: 12.1%;" title="Segmento 5"></div>
-                        <div class="segment-area" @click="abrirModalSegmento(6)" 
-                             style="left: 72.5%; top: 27.5%; width: 4.5%; height: 12.1%;" title="Segmento 6"></div>
-                        <div class="segment-area" @click="abrirModalSegmento(7)" 
-                             style="left: 28.2%; top: 35.6%; width: 4.5%; height: 5.6%;" title="Segmento 7"></div>
-                        <div class="segment-area" @click="abrirModalSegmento(8)" 
-                             style="left: 73.5%; top: 12.7%; width: 5.9%; height: 4.6%;" title="Segmento 8"></div>
-                        <div class="segment-area" @click="abrirModalSegmento(9)" 
-                             style="left: 12.2%; top: 46.2%; width: 4.5%; height: 5.6%;" title="Segmento 9"></div>
-                        <div class="segment-area" @click="abrirModalSegmento(10)" 
-                             style="left: 3.2%; top: 38.2%; width: 7.9%; height: 4.6%;" title="Segmento 10"></div>
-                        <div class="segment-area" @click="abrirModalSegmento(11)" 
-                             style="left: 62.2%; top: 30.2%; width: 7.9%; height: 7.6%;" title="Segmento 11"></div>
-                        <div class="segment-area" @click="abrirModalSegmento(12)" 
-                             style="left: 39.8%; top: 36.1%; width: 7.9%; height: 7.6%;" title="Segmento 12"></div>
-                        <div class="segment-area" @click="abrirModalSegmento(13)" 
-                             style="left: 57.2%; top: 7.2%; width: 5.9%; height: 6.6%;" title="Segmento 13"></div>
-                        <div class="segment-area" @click="abrirModalSegmento(14)" 
-                             style="left: 82.2%; top: 36.2%; width: 5.9%; height: 7.6%;" title="Segmento 14"></div>
-                        <div class="segment-area" @click="abrirModalSegmento(15)" 
-                             style="left: 80.8%; top: 17.7%; width: 7.9%; height: 6.6%;" title="Segmento 15"></div>
-                        <div class="segment-area" @click="abrirModalSegmento(16)" 
-                             style="left: 77.7%; top: 4.1%; width: 7.9%; height: 6.6%;" title="Segmento 16"></div>
-                    </div>
-                    
-                    <!-- Leyenda de colores -->
-                    <div class="mt-6 flex flex-wrap justify-center gap-4">
-                        <div class="flex items-center" x-for="(descripcion, estado) in estadosSegmentos" :key="estado">
-                            <div class="w-8 h-4 mr-2 border border-black" :class="`segment-color-${estado}`"></div>
-                            <span class="text-sm" x-text="descripcion"></span>
-                        </div>
-                    </div>
-
-                    <!-- Referencias -->
-                    <div class="referencias mt-8">
-                        <h4 class="font-bold mb-4">Referencias:</h4>
-                        <div class="grid grid-cols-1 md:grid-cols-4 gap-4 text-left">
-                            <div>
-                                <ol class="list-decimal list-inside">
-                                    <li>Septum Anterior Basal - LAD</li>
-                                    <li>Septum Anterior Medio - LAD</li>
-                                    <li>Septum Basal - RAD</li>
-                                    <li>Septum Medio - RAD</li>
-                                </ol>
-                            </div>
-                            <div>
-                                <ol class="list-decimal list-inside" start="5">
-                                    <li>Septum Aplical - LAD</li>
-                                    <li>Inferior Basal - RAD</li>
-                                    <li>Inferior Medio - RAD</li>
-                                    <li>Inferior Aplical - LAD</li>
-                                </ol>
-                            </div>
-                            <div>
-                                <ol class="list-decimal list-inside" start="9">
-                                    <li>Posterior Basal - CRX</li>
-                                    <li>Posterior Medio - CRX</li>
-                                    <li>Lateral Basal - CRX</li>
-                                    <li>Lateral Medio - CRX</li>
-                                </ol>
-                            </div>
-                            <div>
-                                <ol class="list-decimal list-inside" start="13">
-                                    <li>Lateral Aplical - LAD</li>
-                                    <li>Anterior Basal - LAD</li>
-                                    <li>Anterior Medio - LAD</li>
-                                    <li>Anterior Aplical - LAD</li>
-                                </ol>
-                            </div>
-                        </div>
-                    </div>
+                <div class="p-0">
+                    <iframe
+                        id="segmentosFrame"
+                        src="{% static 'ecocardiograma/segmentos.html' %}?embed=1"
+                        class="w-full border-0"
+                        style="height: 72vh;"
+                        title="Motilidad segmentaria">
+                    </iframe>
                 </div>
             </div>
         </div>
@@ -1050,6 +1046,58 @@ document.addEventListener('alpine:init', () => {
                     <h4 class="text-left text-lg font-semibold">Conclusiones:</h4>
                 </div>
                 <div class="p-6 space-y-6">
+                    <!-- Situs -->
+                    <div class="divConclusiones">
+                        <label class="block font-medium text-gray-700 mb-2">Situs:</label>
+                        <div class="space-y-2">
+                            <select x-model="conclusiones.situs" @change="debouncedSave()" class="form-select max-w-md">
+                                <option value="">:: Seleccionar ::</option>
+                                <option value="1">Solitus</option>
+                                <option value="2">Inversus</option>
+                                <option value="3">Indeterminado</option>
+                            </select>
+                            <div x-show="conclusiones.situs" class="mt-2">
+                                <textarea x-model="conclusiones.comentario_situs" @input="debouncedSave()"
+                                          class="form-textarea w-full max-w-md" rows="3"
+                                          placeholder="Comentario..."></textarea>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Vasos normo implantados -->
+                    <div class="divConclusiones">
+                        <label class="block font-medium text-gray-700 mb-2">Vasos normo implantados:</label>
+                        <div class="space-y-2">
+                            <select x-model="conclusiones.vasos_normoimplantados" @change="debouncedSave()" class="form-select max-w-md">
+                                <option value="">:: Seleccionar ::</option>
+                                <option value="1">No</option>
+                                <option value="2">Sí</option>
+                            </select>
+                            <div x-show="conclusiones.vasos_normoimplantados" class="mt-2">
+                                <textarea x-model="conclusiones.comentario_vasos" @input="debouncedSave()"
+                                          class="form-textarea w-full max-w-md" rows="3"
+                                          placeholder="Comentario..."></textarea>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Concordancia atrio ventricular -->
+                    <div class="divConclusiones">
+                        <label class="block font-medium text-gray-700 mb-2">Concordancia atrio ventricular:</label>
+                        <div class="space-y-2">
+                            <select x-model="conclusiones.concordancia_atrioventricular" @change="debouncedSave()" class="form-select max-w-md">
+                                <option value="">:: Seleccionar ::</option>
+                                <option value="1">No</option>
+                                <option value="2">Sí</option>
+                            </select>
+                            <div x-show="conclusiones.concordancia_atrioventricular" class="mt-2">
+                                <textarea x-model="conclusiones.comentario_concordancia" @input="debouncedSave()"
+                                          class="form-textarea w-full max-w-md" rows="3"
+                                          placeholder="Comentario..."></textarea>
+                            </div>
+                        </div>
+                    </div>
+
                     <!-- Aurícula Izquierda -->
                     <div class="divConclusiones">
                         <label class="block font-medium text-gray-700 mb-2">Aurícula Izquierda:</label>
@@ -1120,6 +1168,74 @@ document.addEventListener('alpine:init', () => {
                                 <textarea x-model="conclusiones.comentario_motilidad" @input="debouncedSave()" 
                                           class="form-textarea w-full max-w-md" rows="3" 
                                           placeholder="Descripción de la anomalía..."></textarea>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Válvula Aórtica -->
+                    <div class="divConclusiones">
+                        <label class="block font-medium text-gray-700 mb-2">Válvula Aórtica:</label>
+                        <div class="space-y-2">
+                            <select multiple x-model="conclusiones.valvula_aortica" @change="debouncedSave()" class="form-select max-w-md">
+                                <template x-for="opcion in opcionesValvula" :key="`va-${opcion.valor}`">
+                                    <option :value="opcion.valor" x-text="opcion.texto"></option>
+                                </template>
+                            </select>
+                            <div x-show="conclusiones.valvula_aortica && conclusiones.valvula_aortica.length" class="mt-2">
+                                <textarea x-model="conclusiones.comentario_valvula_aortica" @input="debouncedSave()"
+                                          class="form-textarea w-full max-w-md" rows="3"
+                                          placeholder="Comentario..."></textarea>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Válvula Mitral -->
+                    <div class="divConclusiones">
+                        <label class="block font-medium text-gray-700 mb-2">Válvula Mitral:</label>
+                        <div class="space-y-2">
+                            <select multiple x-model="conclusiones.valvula_mitral" @change="debouncedSave()" class="form-select max-w-md">
+                                <template x-for="opcion in opcionesValvula" :key="`vm-${opcion.valor}`">
+                                    <option :value="opcion.valor" x-text="opcion.texto"></option>
+                                </template>
+                            </select>
+                            <div x-show="conclusiones.valvula_mitral && conclusiones.valvula_mitral.length" class="mt-2">
+                                <textarea x-model="conclusiones.comentario_valvula_mitral" @input="debouncedSave()"
+                                          class="form-textarea w-full max-w-md" rows="3"
+                                          placeholder="Comentario..."></textarea>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Válvula Tricúspide -->
+                    <div class="divConclusiones">
+                        <label class="block font-medium text-gray-700 mb-2">Válvula Tricúspide:</label>
+                        <div class="space-y-2">
+                            <select multiple x-model="conclusiones.valvula_tricuspide" @change="debouncedSave()" class="form-select max-w-md">
+                                <template x-for="opcion in opcionesValvula" :key="`vt-${opcion.valor}`">
+                                    <option :value="opcion.valor" x-text="opcion.texto"></option>
+                                </template>
+                            </select>
+                            <div x-show="conclusiones.valvula_tricuspide && conclusiones.valvula_tricuspide.length" class="mt-2">
+                                <textarea x-model="conclusiones.comentario_valvula_tricuspide" @input="debouncedSave()"
+                                          class="form-textarea w-full max-w-md" rows="3"
+                                          placeholder="Comentario..."></textarea>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Válvula Pulmonar -->
+                    <div class="divConclusiones">
+                        <label class="block font-medium text-gray-700 mb-2">Válvula Pulmonar:</label>
+                        <div class="space-y-2">
+                            <select multiple x-model="conclusiones.valvula_pulmonar" @change="debouncedSave()" class="form-select max-w-md">
+                                <template x-for="opcion in opcionesValvula" :key="`vp-${opcion.valor}`">
+                                    <option :value="opcion.valor" x-text="opcion.texto"></option>
+                                </template>
+                            </select>
+                            <div x-show="conclusiones.valvula_pulmonar && conclusiones.valvula_pulmonar.length" class="mt-2">
+                                <textarea x-model="conclusiones.comentario_valvula_pulmonar" @input="debouncedSave()"
+                                          class="form-textarea w-full max-w-md" rows="3"
+                                          placeholder="Comentario..."></textarea>
                             </div>
                         </div>
                     </div>
@@ -1208,15 +1324,17 @@ document.addEventListener('alpine:init', () => {
     <div class="text-center mt-8">
         <button @click="guardarCompleto()" 
                 :disabled="guardando" 
-                class="bg-blue-500 hover:bg-blue-700 disabled:bg-gray-400 text-white font-bold py-3 px-6 rounded inline-flex items-center">
+                class="bg-red-600 hover:bg-red-700 disabled:bg-gray-400 text-white font-bold py-3 px-6 rounded inline-flex items-center">
             <svg x-show="guardando" class="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
                 <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
                 <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
             </svg>
-            <span x-text="guardando ? 'Guardando...' : 'Guardar e Imprimir'"></span>
+            <span x-text="guardando ? 'Guardando...' : 'Guardar'"></span>
         </button>
-        <a href="{% url 'historia_clinica:ver_historia' historia.id %}" 
+        {#
+        <a href="{% url 'detalle_historia_con_historial' historia.id %}" 
            class="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-3 px-6 rounded ml-4">Volver</a>
+        #}
     </div>
 
     <!-- Modal para selección de segmentos -->
