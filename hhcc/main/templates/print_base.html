@@ -1,11 +1,11 @@
-{% load i18n l10n %}
+{% load i18n l10n static %}
 <!DOCTYPE html>
 <html lang="es">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>{% block title %}Informe{% endblock %}</title>
-  <link rel="stylesheet" href="file:///home/eze/omar-codex/hhcc/main/static/main/css/print.css">
+  <link rel="stylesheet" href="{% if print_css_path %}{{ print_css_path }}{% else %}{% static 'main/css/print.css' %}{% endif %}">
   {% block extra_css %}{% endblock %}
 </head>
 <body>

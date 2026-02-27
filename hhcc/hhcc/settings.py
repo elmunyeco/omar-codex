@@ -26,7 +26,12 @@ SECRET_KEY = 'django-insecure-s6t!(@**v#55u-0bxn52i4c83q*ydsu82#_&q#0d0i&g1%=^!*
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+# Permisivo por defecto para entorno de prueba (out of the box).
+_allowed_hosts = os.environ.get("DJANGO_ALLOWED_HOSTS", "")
+if _allowed_hosts:
+    ALLOWED_HOSTS = [h.strip() for h in _allowed_hosts.split(",") if h.strip()]
+else:
+    ALLOWED_HOSTS = ["*"]
 
 
 SHELL_PLUS = "ipython"
@@ -61,6 +66,10 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
+
+# Desactiva CSRF para pruebas si se setea DISABLE_CSRF=1 (default).
+if os.environ.get("DISABLE_CSRF", "1") == "1":
+    MIDDLEWARE = [m for m in MIDDLEWARE if m != 'django.middleware.csrf.CsrfViewMiddleware']
 
 ROOT_URLCONF = 'hhcc.urls'
 
@@ -112,7 +121,8 @@ DATABASES = {
 }
 
 # Permite usar sqlite en entorno local/sandbox sin MySQL.
-if os.environ.get("USE_SANDBOX_DB") == "1":
+USE_SANDBOX_DB = os.environ.get("USE_SANDBOX_DB") == "1"
+if USE_SANDBOX_DB:
     DATABASES["default"] = DATABASES["sandbox"]
 
 
