@@ -4,7 +4,7 @@ ENV PYTHONDONTWRITEBYTECODE=1 \
     PYTHONUNBUFFERED=1 \
     PIP_NO_CACHE_DIR=1 \
     USE_SANDBOX_DB=1 \
-    DJANGO_ALLOWED_HOSTS=0.0.0.0,127.0.0.1,localhost
+    DJANGO_ALLOWED_HOSTS=*
 
 WORKDIR /app
 
@@ -27,6 +27,8 @@ RUN pip install --upgrade pip && pip install -r /app/requirements.txt && pip ins
 COPY hhcc /app/hhcc
 
 WORKDIR /app/hhcc
+
+RUN USE_SANDBOX_DB=1 python manage.py collectstatic --noinput
 
 EXPOSE 8000
 

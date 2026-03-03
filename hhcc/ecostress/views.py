@@ -35,7 +35,15 @@ DEFAULT_CONCLUSION = "Estudio negativo para isquemia miocárdica hasta la frecue
 
 def nuevo_estudio(request, historia_id):
     historia = get_object_or_404(HistoriaClinica, pk=historia_id)
-    estudio = EcostressEstudio.objects.filter(historia=historia).first()
+    action = (request.GET.get("action") or "").lower()
+    force_new = action in ("crear", "nuevo")
+    estudio = None
+    if action == "recuperar":
+        estudio_id = request.GET.get("estudio")
+        if estudio_id:
+            estudio = EcostressEstudio.objects.filter(pk=estudio_id, historia=historia).first()
+    if not estudio and not force_new:
+        estudio = EcostressEstudio.objects.filter(historia=historia).first()
 
     initial = {"historia": historia}
     if not estudio:
@@ -179,3 +187,16 @@ def imprimir_estudio(request, estudio_id, historia_id):
     response = HttpResponse(pdf, content_type="application/pdf")
     response["Content-Disposition"] = f"inline; filename={filename}"
     return response
+
+
+def listar_estudios(request, historia_id):
+    historia = get_object_or_404(HistoriaClinica, pk=historia_id)
+    estudios = (
+        EcostressEstudio.objects.filter(historia=historia)
+        .order_by("-id_stress")
+        .values_list("id_stress", "fecha_estudio")
+    )
+    lines = [f"<div>{eid} - {fecha.strftime('%Y-%m-%d')}</div>" for eid, fecha in estudios]
+    if not lines:
+        lines = ["<div>Sin estudios</div>"]
+    return HttpResponse("\n".join(lines))

@@ -15,7 +15,15 @@ from .models import CarotidasEstudio
 
 def nuevo_estudio(request, historia_id):
     historia = get_object_or_404(HistoriaClinica, pk=historia_id)
-    estudio = CarotidasEstudio.objects.filter(historia=historia).first()
+    action = (request.GET.get("action") or "").lower()
+    force_new = action in ("crear", "nuevo")
+    estudio = None
+    if action == "recuperar":
+        estudio_id = request.GET.get("estudio")
+        if estudio_id:
+            estudio = CarotidasEstudio.objects.filter(pk=estudio_id, historia=historia).first()
+    if not estudio and not force_new:
+        estudio = CarotidasEstudio.objects.filter(historia=historia).first()
 
     if request.method == "POST":
         form = CarotidasForm(request.POST, instance=estudio, initial={"historia": historia})
@@ -102,3 +110,16 @@ def imprimir_estudio(request, estudio_id, historia_id):
     response = HttpResponse(pdf, content_type="application/pdf")
     response["Content-Disposition"] = f"inline; filename={filename}"
     return response
+
+
+def listar_estudios(request, historia_id):
+    historia = get_object_or_404(HistoriaClinica, pk=historia_id)
+    estudios = (
+        CarotidasEstudio.objects.filter(historia=historia)
+        .order_by("-id")
+        .values_list("id", "fecha_estudio")
+    )
+    lines = [f"<div>{eid} - {fecha.strftime('%Y-%m-%d')}</div>" for eid, fecha in estudios]
+    if not lines:
+        lines = ["<div>Sin estudios</div>"]
+    return HttpResponse("\n".join(lines))

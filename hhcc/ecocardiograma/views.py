@@ -134,7 +134,15 @@ def nuevo_estudio(request, historia_id):
     historia = get_object_or_404(HistoriaClinica, id=historia_id)
     
     # Buscar estudio existente o crear contexto para uno nuevo
-    estudio = EstudioEcocardiograma.objects.filter(historia=historia).first()
+    action = (request.GET.get("action") or "").lower()
+    force_new = action in ("crear", "nuevo")
+    estudio = None
+    if action == "recuperar":
+        estudio_id = request.GET.get("estudio")
+        if estudio_id:
+            estudio = EstudioEcocardiograma.objects.filter(pk=estudio_id, historia=historia).first()
+    if not estudio and not force_new:
+        estudio = EstudioEcocardiograma.objects.filter(historia=historia).first()
     
     # Buscar conclusión existente
     conclusion = None
@@ -444,6 +452,20 @@ def guardar_comentario_final(request):
     conclusion.comentario_final = request.POST.get('comentarioFinal', '') or ''
     conclusion.save()
     return JsonResponse(True, safe=False)
+
+
+@sandbox_or_login
+def listar_estudios(request, historia_id):
+    historia = get_object_or_404(HistoriaClinica, id=historia_id)
+    estudios = (
+        EstudioEcocardiograma.objects.filter(historia=historia)
+        .order_by("-id")
+        .values_list("id", "fecha")
+    )
+    lines = [f"<div>{eid} - {fecha.strftime('%Y-%m-%d')}</div>" for eid, fecha in estudios]
+    if not lines:
+        lines = ["<div>Sin estudios</div>"]
+    return HttpResponse("\n".join(lines))
 
 
 @sandbox_or_login

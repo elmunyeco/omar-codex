@@ -5,6 +5,8 @@ app_name = 'ecocardiograma'
 
 urlpatterns = [
     # Mostrar formulario
+    path('<int:historia_id>/', views.nuevo_estudio, name='nuevo_estudio_form'),
+    path('<int:historia_id>/estudios/', views.listar_estudios, name='listar_estudios'),
     path('<int:historia_id>/nuevo/', views.nuevo_estudio, name='nuevo_estudio'),
     
     # Guardar todo via AJAX (Alpine.js)
