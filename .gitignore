@@ -85,3 +85,4 @@ package-lock.json
 # */migrations/*.pyc
 # */migrations/__pycache__/
 .gitignore_*
+*.tar
