@@ -86,3 +86,6 @@ package-lock.json
 # */migrations/__pycache__/
 .gitignore_*
 *.tar
+
+# no docker exports
+*.tar
