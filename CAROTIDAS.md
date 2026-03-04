@@ -41,6 +41,7 @@
 - `CarotidasEstudio`:
   - textos `max_length=255` para no truncar.
   - helpers `com_der_texto()` y `com_izq_texto()`.
+  - campo `fecha_estudio` (DateField) para fecha de creación del estudio.
 - `CarotidasForm`:
   - normaliza coma→punto y convierte a `Decimal`, agrega error si inválido.
   - override en form: `esp_int_med_der` / `esp_int_med_izq` como `CharField` para evitar error 400 en AJAX; conversión se mantiene en `clean()`.
@@ -54,7 +55,9 @@
 - Endpoint: `/carotidas/imprimir_estudio/<estudio_id>/<historia_id>/`.
 - Respuesta `Content-Type: application/pdf` y `Content-Disposition: inline`.
 - Se ocultan secciones sin datos (no imprime títulos vacíos).
-- Logo: `Scrap_cardioprietohc/data/raw/carotidas/assets/images/logo.jpg`.
+- Logo y CSS se resuelven con `static_file_url()` (sin paths absolutos).
+- Logo en membrete: `logo_omar_prieto.svg` con fallback a `logo.png`.
+- Tamaño de logo en PDF: `.logo { height: 48px; max-width: 270px; object-fit: contain; }`.
 - Sitio en header: `www.cardioprietohc.com`.
 - Texto corregido sin errores ortográficos (p.ej. “Quality Intima Media Thickness Analysis”).
 - No se imprime “Consultorio Cardiológico Doctores Prieto”; usar “Consultorio Cardiológico Doctor Omar Prieto”.
@@ -67,6 +70,12 @@
 - Parametrizable por contexto: `print_logo_path`, `print_site_text`, `print_header_text`.
 - Divisores suaves entre membrete/títulos y títulos/informe.
 - Usa `print.css` para estilos comunes.
+
+## URLs actuales
+- Formulario base: `/carotidas/<historia_id>/`
+- Crear estudio nuevo: `/carotidas/<historia_id>/?action=crear`
+- Recuperar estudio específico: `/carotidas/<historia_id>/?action=recuperar&estudio=<id>`
+- Listado simple (HTML sin estilo): `/carotidas/<historia_id>/estudios/`
 
 ## Referencias legacy
 - PDF legacy descargado: `Scrap_cardioprietohc/data/raw/carotidas/imprimirEstudio_4512_7544.pdf`.

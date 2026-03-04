@@ -79,7 +79,16 @@
 - Ajuste: tabla de segmentos compacta debajo del gráfico, con nombre y estado en dos líneas por celda.
 - Se quitó la firma final (línea + “Dr. Omar Prieto / Cardiólogo”) del PDF.
 - Pie de página común (en `print_base.html`): 2 renglones en blanco, línea divisoria, “Emitido DD/MM/AAAA” a la izquierda, “Dr. Omar Prieto” a la derecha, y “cardiologo” alineado a la derecha debajo.
+- Logo en membrete: `logo_omar_prieto.svg` con fallback a `logo.png`.
+- Tamaño de logo en PDF: `.logo { height: 48px; max-width: 270px; object-fit: contain; }`.
 
 ## UI (formulario)
 - Botón principal: texto “Guardar” (antes “Guardar e Imprimir”).
 - Botón de imprimir del header y botón “Volver” quedaron comentados para ocultarlos.
+- Columnas numéricas del formulario usan “Nro.” en lugar de “#” para evitar caracteres sueltos en render.
+
+## URLs (formulario y listados)
+- Formulario base: `/ecocardiograma/<historia_id>/`
+- Crear estudio nuevo: `/ecocardiograma/<historia_id>/?action=crear`
+- Recuperar estudio específico: `/ecocardiograma/<historia_id>/?action=recuperar&estudio=<id>`
+- Listado simple (HTML sin estilo): `/ecocardiograma/<historia_id>/estudios/`

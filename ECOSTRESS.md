@@ -67,7 +67,10 @@
 ## Implementación Django (sandbox)
 - App nueva: `hhcc/ecostress` (registrada en `hhcc/hhcc/settings.py`).
 - URLs:
-  - Formulario: `/ecostress/<historia_id>/nuevo/`
+  - Formulario base: `/ecostress/<historia_id>/`
+  - Crear estudio nuevo: `/ecostress/<historia_id>/?action=crear`
+  - Recuperar estudio específico: `/ecostress/<historia_id>/?action=recuperar&estudio=<id>`
+  - Listado simple (HTML sin estilo): `/ecostress/<historia_id>/estudios/`
   - PDF: `/ecostress/imprimir_estudio/<estudio_id>/<historia_id>/`
 - Modelo: `EcostressEstudio` mapeado a tabla legacy `stress`.
   - PK: `id_stress` → columna `idStress`.
@@ -88,8 +91,11 @@
   - `hhcc/ecostress/templates/ecostress/imprimir_estudio.html` extiende `print_base.html`.
   - WeasyPrint en `ecostress/views.py` (PDF inline).
   - Oculta secciones vacías (solo imprime si hay contenido).
-  - Incluye la fecha en el membrete y en “Datos del estudio”.
+  - Incluye la fecha en el membrete y en “Datos del estudio” con formato `j de F de Y`.
   - Header usa `www.cardioprieto.com`.
+  - Logo y CSS se resuelven con `static_file_url()` (sin paths absolutos).
+  - Logo en membrete: `logo_omar_prieto.svg` con fallback a `logo.png`.
+  - Tamaño de logo en PDF: `.logo { height: 48px; max-width: 270px; object-fit: contain; }`.
 
 ## RAG
 - HTML y assets ya guardados en `Scrap_cardioprietohc/data/raw/ecostress/`.

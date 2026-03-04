@@ -666,7 +666,7 @@ def imprimir_estudio(request, estudio_id):
         'bidimensional_rows': bidimensional_rows,
         'doppler_rows': doppler_rows,
         'conclusion_lines': conclusion_lines,
-        'print_logo_path': static_file_url("main/images/logo.png"),
+        'print_logo_path': static_file_url("main/images/logo_omar_prieto.svg"),
         'print_site_text': "www.cardioprieto.com",
         'print_header_text': "Consultorio Cardiológico Doctor Omar Prieto",
         'print_css_path': static_file_url("main/css/print.css"),

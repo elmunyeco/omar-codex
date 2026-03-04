@@ -37,6 +37,15 @@
 - Se mantiene Tailwind/Alpine pero se busca replicar flujos del legacy.
 - Pendiente general: ajustar pacientes a `numDoc`, sexo `H/M`, eliminar, AJAX, validaciones, feedbacks.
 
+## Static y Docker (out-of-the-box)
+- Tailwind y Alpine se sirven en local (no CDN):
+  - `hhcc/main/static/main/css/tailwind.min.css`
+  - `hhcc/main/static/main/js/alpine.min.js`
+- `whitenoise` habilitado para servir estáticos en gunicorn.
+- `STATIC_ROOT=/app/hhcc/staticfiles` con `collectstatic` en build Docker.
+- Dockerfile exporta `DJANGO_ALLOWED_HOSTS=*` para evitar `DisallowedHost` en test.
+- CSRF desactivado por default en entorno de prueba (`DISABLE_CSRF=1`).
+
 ## DB y entorno
 - `hhcc/hhcc/settings.py`: DB default MySQL (localhost 127.0.0.1:3307).
 - Flag `USE_SANDBOX_DB=1` fuerza sqlite (`db.sqlite3`) para pruebas en sandbox.
@@ -51,14 +60,29 @@ USE_SANDBOX_DB=1 python manage.py runserver 0.0.0.0:8090
 - Si corrés con `USE_SANDBOX_DB=1`, también migrar con ese flag para evitar warnings.
 
 ## URLs de prueba (sandbox)
-- Carótidas: `http://localhost:8090/carotidas/1/nuevo/`
-- Ecostress: `http://localhost:8090/ecostress/1/nuevo/`
-- MMII arterial: `http://localhost:8090/mmii/1/nuevo/`
+- Carótidas: `http://localhost:8090/carotidas/1/`
+- Ecostress: `http://localhost:8090/ecostress/1/`
+- MMII arterial: `http://localhost:8090/mmii/1/`
 
 ## Impresión (global)
 - Base común de impresión: `hhcc/main/templates/print_base.html`.
 - CSS común: `hhcc/main/static/main/css/print.css` (cargado vía `file:///`).
 - Base parametrizable: `print_logo_path`, `print_site_text`, `print_header_text`.
+- Logo de membretes actualizado: `logo_omar_prieto.svg` (fallback a `logo.png` vía `onerror` en headers y `print_base.html`).
+- Tamaño de logo en PDF: `.logo { height: 48px; max-width: 270px; object-fit: contain; }`.
+ - Header PDF: logo a la izquierda y datos (Nombre/Fecha/HC) a la derecha, repetidos en todas las páginas (WeasyPrint `@page` + `position: running(page-header)`).
+ - Layout del header: `table` 40% logo / 60% datos; alineación derecha en datos.
+ - Línea de separación: solo borde inferior del header (`border-bottom: 1px solid #e5e7eb`).
+ - Margen superior de página para header: `@page margin-top: 50mm`.
+
+## Logos (assets)
+- SVG final en raíz: `logo_omar_prieto.svg` y PNG `logo_omar_prieto.png`.
+- Copiados a estáticos: `hhcc/main/static/main/images/logo_omar_prieto.svg` y `.png`.
+- SVG auxiliar del isotipo: `logo_circulo_solo_stroke_corazon.svg`.
+
+## PDFs de prueba (sandbox)
+- Generados: `hhcc/ecocardiograma_1_1.pdf`, `hhcc/carotidas_1_1.pdf`, `hhcc/mmii_1_1.pdf`.
+- `ecostress` no tiene tabla en `db.sqlite3` (si se necesita, generar desde app en ejecución).
 
 ## i18n global
 - Se fuerza idioma `es-ar` para todas las requests mediante middleware.

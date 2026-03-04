@@ -70,12 +70,16 @@ Conclusiones (max 500):
 ## Implementación Django (sandbox)
 - App nueva: `hhcc/mmii` (registrada en `hhcc/hhcc/settings.py`).
 - URLs:
-  - Formulario: `/mmii/<historia_id>/nuevo/`
+  - Formulario base: `/mmii/<historia_id>/`
+  - Crear estudio nuevo: `/mmii/<historia_id>/?action=crear`
+  - Recuperar estudio específico: `/mmii/<historia_id>/?action=recuperar&estudio=<id>`
+  - Listado simple (HTML sin estilo): `/mmii/<historia_id>/estudios/`
   - PDF: `/mmii/imprimir_estudio/<estudio_id>/<historia_id>/`
 - Modelo: `MmiiEstudio` mapeado a tabla `mmii`.
   - PK: `id_mmii` → columna `idMMII`.
   - FK: `historia` → columna `idHC` (HistoriaClinica).
   - Campos textuales alineados a legacy para todas las arterias y conclusión.
+  - Campo nuevo: `fecha_estudio` (DateField) para fecha de creación del estudio.
 - Migraciones:
   - `hhcc/mmii/migrations/0001_initial.py`
   - `hhcc/mmii/migrations/0002_migrate_from_doppler.py` (migra data y elimina tabla `doppler`)
@@ -88,7 +92,10 @@ Conclusiones (max 500):
   - `hhcc/mmii/templates/mmii/imprimir_estudio.html` extiende `print_base.html`.
   - WeasyPrint en `mmii/views.py` (PDF inline).
   - Secciones separadas para sistema derecho/izquierdo y conclusiones.
-  - Fecha del estudio: `timezone.localdate()`.
+  - Fecha del estudio: `fecha_estudio` con formato `j de F de Y`.
+  - Logo y CSS se resuelven con `static_file_url()` (sin paths absolutos).
+  - Logo en membrete: `logo_omar_prieto.svg` con fallback a `logo.png`.
+  - Tamaño de logo en PDF: `.logo { height: 48px; max-width: 270px; object-fit: contain; }`.
 
 ## RAG
 - HTML y assets guardados en `Scrap_cardioprietohc/data/raw/mmii/`.

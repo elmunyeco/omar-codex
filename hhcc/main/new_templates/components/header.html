@@ -9,7 +9,7 @@ templates/components/header.html - Componente de encabezado estilizado
     <!-- Sección superior del encabezado -->
     <div class="header-main">
         <div class="logo-section">
-            <img src="{% static 'main/images/logo.png' %}" alt="Logo Dr. Omar Prieto" class="header-logo">
+            <img src="{% static 'main/images/logo_omar_prieto.svg' %}" alt="Logo Dr. Omar Prieto" class="header-logo" onerror="this.onerror=null;this.src='{% static "main/images/logo.png" %}';" >
             <div class="doctor-title">
                 <span class="doctor-name">Dr. Omar Prieto</span>
                 <span class="doctor-specialty">CARDIOLOGÍA INTEGRAL</span>

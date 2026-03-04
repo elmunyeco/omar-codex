@@ -129,7 +129,7 @@ def imprimir_estudio(request, estudio_id, historia_id):
         "derecho_items": derecho_items,
         "izquierdo_items": izquierdo_items,
         "conclusion": non_empty(estudio.conclusion),
-        "print_logo_path": static_file_url("main/images/logo.png"),
+        "print_logo_path": static_file_url("main/images/logo_omar_prieto.svg"),
         "print_site_text": "www.cardioprieto.com",
         "print_header_text": "Consultorio Cardiológico Doctor Omar Prieto",
         "print_css_path": static_file_url("main/css/print.css"),

@@ -12,24 +12,22 @@
   {% language 'es-ar' %}
   {% with logo=print_logo_path|default:None %}
   <div class="header">
-    <div>
-      {% if logo %}
-        <img class="logo" src="{{ logo }}" alt="{{ print_header_text|default:'Consultorio Cardiológico Doctor Omar Prieto' }}">
-      {% else %}
-        <img class="logo" src="{% static 'main/images/logo.png' %}" alt="{{ print_header_text|default:'Consultorio Cardiológico Doctor Omar Prieto' }}">
-      {% endif %}
-    </div>
-    <div style="font-size:12px; text-align:right;">
-      <div>{{ print_site_text|default:"www.cardioprieto.com" }}</div>
+    <div class="header-inner">
+      <div class="header-left">
+        {% if logo %}
+          <img class="logo" src="{{ logo }}" alt="{{ print_header_text|default:'Consultorio Cardiológico Doctor Omar Prieto' }}">
+        {% else %}
+          <img class="logo" src="{% static 'main/images/logo_omar_prieto.svg' %}" alt="{{ print_header_text|default:'Consultorio Cardiológico Doctor Omar Prieto' }}" onerror="this.onerror=null;this.src='{% static "main/images/logo.png" %}';" >
+        {% endif %}
+      </div>
+      <div class="header-right">
+        <div class="meta header-meta">
+          {% block meta %}{% endblock %}
+        </div>
+      </div>
     </div>
   </div>
   {% endwith %}
-
-  <div class="meta">
-    {% block meta %}{% endblock %}
-  </div>
-
-  <hr class="divider-soft">
 
   <div class="title">
     {% block titles %}{% endblock %}
@@ -39,14 +37,11 @@
 
   {% block content %}{% endblock %}
 
-  <br><br>
-  <hr class="divider-soft">
+  <div class="footer-spacer"></div>
   <div class="footer">
     <div class="footer-row">
       <div>Emitido {% now "d/m/Y" %}</div>
-      <div>Dr. Omar Prieto</div>
     </div>
-    <div class="footer-note">cardiologo</div>
   </div>
   {% endlanguage %}
 </body>
