@@ -29,6 +29,12 @@
   </div>
   {% endwith %}
 
+  <div class="footer">
+    <div class="footer-row">
+      <div>Emitido {% now "d/m/Y" %}</div>
+    </div>
+  </div>
+
   <div class="title">
     {% block titles %}{% endblock %}
   </div>
@@ -38,11 +44,6 @@
   {% block content %}{% endblock %}
 
   <div class="footer-spacer"></div>
-  <div class="footer">
-    <div class="footer-row">
-      <div>Emitido {% now "d/m/Y" %}</div>
-    </div>
-  </div>
   {% endlanguage %}
 </body>
 </html>

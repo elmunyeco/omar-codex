@@ -89,3 +89,4 @@ package-lock.json
 
 # no docker exports
 *.tar
+tmp_pdf_render/

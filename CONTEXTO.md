@@ -83,6 +83,16 @@ USE_SANDBOX_DB=1 python manage.py runserver 0.0.0.0:8090
 ## PDFs de prueba (sandbox)
 - Generados: `hhcc/ecocardiograma_1_1.pdf`, `hhcc/carotidas_1_1.pdf`, `hhcc/mmii_1_1.pdf`.
 - `ecostress` no tiene tabla en `db.sqlite3` (si se necesita, generar desde app en ejecución).
+ - Nuevos estudios de prueba con lorem (HC 7):
+   - Ecocardiograma `id=3` (con conclusión larga).
+   - Carótidas `id=7`.
+   - MMII `id=3`.
+   - Ecostress `id=2` (existente).
+ - URLs de prueba:
+   - `http://127.0.0.1:8000/ecocardiograma/imprimir_estudio/3/`
+   - `http://127.0.0.1:8000/carotidas/imprimir_estudio/7/7/`
+   - `http://127.0.0.1:8000/mmii/imprimir_estudio/3/7/`
+   - `http://127.0.0.1:8000/ecostress/imprimir_estudio/2/7/`
 
 ## i18n global
 - Se fuerza idioma `es-ar` para todas las requests mediante middleware.

@@ -1,0 +1,12 @@
+
+  - http://127.0.0.1:8000/ecocardiograma/imprimir_estudio/3/
+  - http://127.0.0.1:8000/carotidas/imprimir_estudio/7/7/
+  - http://127.0.0.1:8000/mmii/imprimir_estudio/3/7/
+  - http://127.0.0.1:8000/ecostress/imprimir_estudio/2/7/
+
+
+
+  - http://129.212.132.248:8000/ecocardiograma/imprimir_estudio/3/
+  - http://129.212.132.248:8000/carotidas/imprimir_estudio/7/7/
+  - http://129.212.132.248:8000/mmii/imprimir_estudio/3/7/
+  - http://129.212.132.248:8000/ecostress/imprimir_estudio/2/7/
