@@ -15,9 +15,9 @@
 {% endblock %}
 
 {% block meta %}
-  <div>Nombre y Apellido: {{ paciente.nombre }} {{ paciente.apellido }}</div>
+  <div>Nombre y apellido: {{ paciente.nombre }} {{ paciente.apellido }}</div>
+  <div>Fecha del estudio: {{ estudio.fecha|date:"j \d\e F \d\e Y" }}</div>
   <div>Historia Clínica: {{ estudio.historia.id|stringformat:"05d" }}</div>
-  <div>Fecha de Estudio: {{ estudio.fecha|date:"j \d\e F \d\e Y" }}</div>
 {% endblock %}
 
 {% block titles %}
