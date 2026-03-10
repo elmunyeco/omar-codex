@@ -39,7 +39,7 @@
 
 ### Modelo, form y helpers
 - `CarotidasEstudio`:
-  - textos `max_length=255` para no truncar.
+  - textos `max_length=512`.
   - helpers `com_der_texto()` y `com_izq_texto()`.
   - campo `fecha_estudio` (DateField) para fecha de creación del estudio.
 - `CarotidasForm`:
@@ -64,12 +64,17 @@
 - WeasyPrint sin base_url para evitar `DisallowedHost`.
 - Submit AJAX: guarda y abre nueva ventana con el PDF; popup se abre antes del fetch.
 - Mensaje de éxito se muestra en el mismo evento AJAX (sin recarga).
+- Títulos en PDF centrados y sin subrayado (estilos globales en `print.css`).
 
 ## Template base de impresión
 - Base común: `hhcc/main/templates/print_base.html`.
 - Parametrizable por contexto: `print_logo_path`, `print_site_text`, `print_header_text`.
 - Divisores suaves entre membrete/títulos y títulos/informe.
 - Usa `print.css` para estilos comunes.
+
+## UI (formulario)
+- Títulos (`h1/h2/h3`) centrados y sin subrayado (estilos globales).
+- Campos de texto libre con contador y límite `512` caracteres.
 
 ## URLs actuales
 - Formulario base: `/carotidas/<historia_id>/`

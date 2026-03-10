@@ -17,10 +17,10 @@
   - `idEstudio` (0 si es nuevo)
 
 ### Campos superiores
-- `indicacionEstudio` (text, max 40)
+- `indicacionEstudio` (text, max 512)
 - `tipoApremio` (select): `Físico`, `Farmacológico`
-- `medicacionMomentoEstudio` (text, max 50)
-- `medicoSolicitante` (text, max 30)
+- `medicacionMomentoEstudio` (text, max 512)
+- `medicoSolicitante` (text, max 512)
 
 ### Datos de prueba ergométrica
 - Frecuencia cardíaca:
@@ -31,10 +31,10 @@
   - `presionArterialMaximaInicial` / `presionArterialMaximaFinal`
 
 ### Textareas clínicas
-- `informeErgometria` (max 250) — trae texto por defecto en el HTML
-- `datosEcocardiograficosBasales` (max 300)
-- `datosEcocardiograficosPostEsfuerzoInmediato` (max 300)
-- `conclusion` (max 300)
+- `informeErgometria` (max 512) — trae texto por defecto en el HTML
+- `datosEcocardiograficosBasales` (max 512)
+- `datosEcocardiograficosPostEsfuerzoInmediato` (max 512)
+- `conclusion` (max 8000)
 
 ## JS (legacy)
 - Archivo: `assets/js/stress.js`
@@ -49,7 +49,7 @@
 - Archivo principal: `assets/css/stress.css`.
 - Estilos relevantes:
   - `.header` centrado con logo.
-  - `.tituloPrincipal` subrayado, 24px.
+  - `.tituloPrincipal` subrayado, 24px. (en Django, se quitó subrayado y se centró por estilos globales)
   - `.form-control` tamaño 12px.
   - `.boxComentario` oculto por default.
   - Loader `#ldgGuardar` con animación `glyphicon-refresh-animate`.
@@ -96,6 +96,11 @@
   - Logo y CSS se resuelven con `static_file_url()` (sin paths absolutos).
   - Logo en membrete: `logo_omar_prieto.svg` con fallback a `logo.png`.
   - Tamaño de logo en PDF: `.logo { height: 48px; max-width: 270px; object-fit: contain; }`.
+  - Títulos en PDF centrados y sin subrayado (estilos globales en `print.css`).
+
+## UI (formulario)
+- Títulos (`h1/h2/h3`) centrados y sin subrayado (estilos globales).
+- Campos de texto libre con contador y límite `512` caracteres (salvo `conclusion`, `8000`).
 
 ## RAG
 - HTML y assets ya guardados en `Scrap_cardioprietohc/data/raw/ecostress/`.

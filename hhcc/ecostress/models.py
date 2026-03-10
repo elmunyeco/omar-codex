@@ -1,4 +1,5 @@
 from django.db import models
+from django.core.validators import MaxLengthValidator
 
 from main.models import HistoriaClinica
 
@@ -16,38 +17,90 @@ class EcostressEstudio(models.Model):
         related_name="ecostress_estudios",
         db_column="idHC",
     )
-    indicacion_estudio = models.TextField(null=True, blank=True, db_column="indicacionEstudio")
-    tipo_apremio = models.TextField(null=True, blank=True, db_column="tipoApremio")
-    medicacion_momento_estudio = models.TextField(
-        null=True, blank=True, db_column="medicacionMomentoEstudio"
+    indicacion_estudio = models.TextField(
+        null=True,
+        blank=True,
+        db_column="indicacionEstudio",
+        validators=[MaxLengthValidator(512)],
     )
-    medico_solicitante = models.TextField(null=True, blank=True, db_column="medicoSolicitante")
+    tipo_apremio = models.TextField(
+        null=True,
+        blank=True,
+        db_column="tipoApremio",
+        validators=[MaxLengthValidator(512)],
+    )
+    medicacion_momento_estudio = models.TextField(
+        null=True,
+        blank=True,
+        db_column="medicacionMomentoEstudio",
+        validators=[MaxLengthValidator(512)],
+    )
+    medico_solicitante = models.TextField(
+        null=True,
+        blank=True,
+        db_column="medicoSolicitante",
+        validators=[MaxLengthValidator(512)],
+    )
     frecuencia_cardiaca_basal = models.TextField(
-        null=True, blank=True, db_column="frecuenciaCardiacaBasal"
+        null=True,
+        blank=True,
+        db_column="frecuenciaCardiacaBasal",
+        validators=[MaxLengthValidator(512)],
     )
     frecuencia_cardiaca_maxima = models.TextField(
-        null=True, blank=True, db_column="frecuenciaCardiacaMaxima"
+        null=True,
+        blank=True,
+        db_column="frecuenciaCardiacaMaxima",
+        validators=[MaxLengthValidator(512)],
     )
     presion_arterial_basal_inicial = models.TextField(
-        null=True, blank=True, db_column="presionArterialBasalInicial"
+        null=True,
+        blank=True,
+        db_column="presionArterialBasalInicial",
+        validators=[MaxLengthValidator(512)],
     )
     presion_arterial_basal_final = models.TextField(
-        null=True, blank=True, db_column="presionArterialBasalFinal"
+        null=True,
+        blank=True,
+        db_column="presionArterialBasalFinal",
+        validators=[MaxLengthValidator(512)],
     )
     presion_arterial_maxima_inicial = models.TextField(
-        null=True, blank=True, db_column="presionArterialMaximaInicial"
+        null=True,
+        blank=True,
+        db_column="presionArterialMaximaInicial",
+        validators=[MaxLengthValidator(512)],
     )
     presion_arterial_maxima_final = models.TextField(
-        null=True, blank=True, db_column="presionArterialMaximaFinal"
+        null=True,
+        blank=True,
+        db_column="presionArterialMaximaFinal",
+        validators=[MaxLengthValidator(512)],
     )
-    informe_ergometria = models.TextField(null=True, blank=True, db_column="informeErgometria")
+    informe_ergometria = models.TextField(
+        null=True,
+        blank=True,
+        db_column="informeErgometria",
+        validators=[MaxLengthValidator(512)],
+    )
     datos_ecocardiograficos_basales = models.TextField(
-        null=True, blank=True, db_column="datosEcocardiograficosBasales"
+        null=True,
+        blank=True,
+        db_column="datosEcocardiograficosBasales",
+        validators=[MaxLengthValidator(512)],
     )
     datos_ecocardiograficos_post_esfuerzo_inmediato = models.TextField(
-        null=True, blank=True, db_column="datosEcocardiograficosPostEsfuerzoInmediato"
+        null=True,
+        blank=True,
+        db_column="datosEcocardiograficosPostEsfuerzoInmediato",
+        validators=[MaxLengthValidator(512)],
     )
-    conclusion = models.TextField(null=True, blank=True, db_column="conclusion")
+    conclusion = models.TextField(
+        null=True,
+        blank=True,
+        db_column="conclusion",
+        validators=[MaxLengthValidator(8000)],
+    )
     fecha_estudio = models.DateField(null=True, blank=True)
 
     class Meta:

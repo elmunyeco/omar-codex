@@ -180,6 +180,7 @@ def imprimir_estudio(request, estudio_id, historia_id):
         "print_site_text": "www.cardioprieto.com",
         "print_header_text": "Consultorio Cardiológico Doctor Omar Prieto",
         "print_css_path": static_file_url("main/css/print.css"),
+        "print_show_signature": request.GET.get("firma") == "1",
     }
     html = render_to_string("ecostress/imprimir_estudio.html", context)
     pdf = HTML(string=html).write_pdf()

@@ -1,4 +1,5 @@
 {% extends "base.html" %}
+{% load static %}
 
 {% block title %}Ecostrés cardíaco{% endblock %}
 
@@ -30,15 +31,16 @@
   <div class="flex items-start justify-between">
     <div>
       <h1 class="text-2xl font-semibold text-slate-900">Ecostrés cardíaco</h1>
-      <p class="text-sm text-slate-600">Formulario de informe de estudio</p>
     </div>
     <div class="text-right text-sm text-slate-600">
       <div>Paciente: <span class="font-medium text-slate-900">{{ paciente.apellido }}, {{ paciente.nombre }}</span></div>
       <div>Historia clínica: <span class="font-medium text-slate-900">{{ historia.id }}</span></div>
+      <div>Fecha de estudio: <span class="font-medium text-slate-900">{% now "d/m/Y" %}</span></div>
     </div>
   </div>
 
-  <div id="ecostress-success" class="hidden rounded-md border border-emerald-200 bg-emerald-50 px-4 py-2 text-sm text-emerald-800"></div>
+  <div id="ecostress-success" class="hidden px-4 py-2 text-sm rounded" style="background:#ecfdf5;border:1px solid #a7f3d0;color:#065f46;"></div>
+  <div id="ecostress-error" class="hidden px-4 py-2 text-sm rounded" style="background:#fef2f2;border:1px solid #fecaca;color:#991b1b;"></div>
   {% if messages %}
     <div class="space-y-2">
       {% for message in messages %}
@@ -60,7 +62,7 @@
             type="text"
             name="indicacion_estudio"
             x-model="indicacionEstudio"
-            maxlength="40"
+            maxlength="512"
             class="mt-1 w-full rounded-md border border-slate-300 px-3 py-2 text-sm"
           />
         </div>
@@ -81,7 +83,7 @@
             type="text"
             name="medicacion_momento_estudio"
             x-model="medicacionMomentoEstudio"
-            maxlength="50"
+            maxlength="512"
             class="mt-1 w-full rounded-md border border-slate-300 px-3 py-2 text-sm"
           />
         </div>
@@ -91,7 +93,7 @@
             type="text"
             name="medico_solicitante"
             x-model="medicoSolicitante"
-            maxlength="30"
+            maxlength="512"
             class="mt-1 w-full rounded-md border border-slate-300 px-3 py-2 text-sm"
           />
         </div>
@@ -179,7 +181,7 @@
             name="informe_ergometria"
             x-model="informeErgometria"
             rows="4"
-            maxlength="250"
+            maxlength="512"
             class="mt-1 w-full rounded-md border border-slate-300 px-3 py-2 text-sm"
           ></textarea>
         </div>
@@ -189,7 +191,7 @@
             name="datos_ecocardiograficos_basales"
             x-model="datosEcocardiograficosBasales"
             rows="4"
-            maxlength="300"
+            maxlength="512"
             class="mt-1 w-full rounded-md border border-slate-300 px-3 py-2 text-sm"
           ></textarea>
         </div>
@@ -199,7 +201,7 @@
             name="datos_ecocardiograficos_post_esfuerzo_inmediato"
             x-model="datosEcocardiograficosPostEsfuerzoInmediato"
             rows="4"
-            maxlength="300"
+            maxlength="512"
             class="mt-1 w-full rounded-md border border-slate-300 px-3 py-2 text-sm"
           ></textarea>
         </div>
@@ -209,14 +211,18 @@
             name="conclusion"
             x-model="conclusion"
             rows="4"
-            maxlength="300"
+            maxlength="8000"
             class="mt-1 w-full rounded-md border border-slate-300 px-3 py-2 text-sm"
           ></textarea>
         </div>
       </div>
     </section>
 
-    <div class="flex flex-wrap items-center justify-end gap-3">
+    <div class="flex flex-wrap items-center justify-center gap-4">
+      <label class="flex items-center gap-2 text-sm text-slate-600">
+        <input type="checkbox" x-model="firmar" class="rounded border-slate-300 text-red-600">
+        Firmar PDF
+      </label>
       <button
         type="submit"
         class="inline-flex items-center gap-2 rounded-md bg-red-600 px-4 py-2 text-sm font-semibold text-white hover:bg-red-700"
@@ -235,6 +241,7 @@
     Alpine.data('ecostressForm', (defaults) => ({
       hasEstudio: !!defaults.hasEstudio,
       guardando: false,
+      firmar: false,
       indicacionEstudio: defaults.indicacionEstudio || '',
       tipoApremio: defaults.tipoApremio || '',
       medicacionMomentoEstudio: defaults.medicacionMomentoEstudio || '',
@@ -286,22 +293,39 @@
           const data = await response.json();
           if (response.ok && data.success) {
             const msg = document.getElementById('ecostress-success');
+            const err = document.getElementById('ecostress-error');
             if (msg) {
-              msg.textContent = 'Estudio de ecostrés cardíaco guardado.';
+              msg.textContent = 'Estudio de ecostrés cardíaco guardado';
               msg.classList.remove('hidden');
             }
-            const url = `{% url 'ecostress:ecostress_imprimir' 0 0 %}`
+            if (err) {
+              err.classList.add('hidden');
+            }
+            let url = `{% url 'ecostress:ecostress_imprimir' 0 0 %}`
               .replace('/0/0/', `/${data.estudio_id}/${data.historia_id}/`);
+            if (this.firmar) {
+              url += '?firma=1';
+            }
             if (popup) {
               popup.location = url;
             } else {
               window.open(url, '_blank');
             }
           } else {
-            alert('Se produjo un error al guardar el estudio.');
+            const err = document.getElementById('ecostress-error');
+            if (err) {
+              err.textContent = 'Estudio de ecostrés cardíaco no se pudo guardar por error';
+              err.classList.remove('hidden');
+              setTimeout(() => err.classList.add('hidden'), 15000);
+            }
           }
         } catch (e) {
-          alert('Se produjo un error al guardar el estudio.');
+          const err = document.getElementById('ecostress-error');
+          if (err) {
+            err.textContent = 'Estudio de ecostrés cardíaco no se pudo guardar por error';
+            err.classList.remove('hidden');
+            setTimeout(() => err.classList.add('hidden'), 15000);
+          }
         } finally {
           this.guardando = false;
         }
@@ -309,4 +333,5 @@
     }))
   });
 </script>
+<script src="{% static 'main/js/char_counter.js' %}"></script>
 {% endblock %}

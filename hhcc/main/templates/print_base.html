@@ -43,6 +43,13 @@
 
   {% block content %}{% endblock %}
 
+  {% if print_show_signature %}
+  <div class="signature">
+    <div class="signature-name">Dr. Omar Prieto</div>
+    <div class="signature-role">cardiologo</div>
+  </div>
+  {% endif %}
+
   <div class="footer-spacer"></div>
   {% endlanguage %}
 </body>

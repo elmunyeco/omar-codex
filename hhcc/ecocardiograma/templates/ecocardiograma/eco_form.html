@@ -10,9 +10,9 @@ document.addEventListener('alpine:init', () => {
         // Estado principal
         historiaId: null,
         guardando: false,
-        autoGuardando: false,
         debounceTimer: null,
         mensaje: { texto: '', tipo: '' },
+        firmar: false,
         
         // Pestañas
         activeTab: 'bidimensional',
@@ -416,46 +416,28 @@ document.addEventListener('alpine:init', () => {
             }
         },
         
-        // Sistema de auto-guardado con debounce
-        debouncedSave() {
-            clearTimeout(this.debounceTimer);
-            this.debounceTimer = setTimeout(() => {
-                this.autoGuardar();
-            }, 2000); // Esperar 2 segundos después del último cambio
-        },
-        
         // Guardado
-        async autoGuardar() {
-            // Guardado automático sin mostrar spinner
-            if (!this.estudio.id) {
-                // No hacer auto-guardado si no existe el estudio aún
-                return;
-            }
-            
-            this.autoGuardando = true;
-            try {
-                await this.guardarDatos(false);
-            } catch (error) {
-                console.error('Error en auto-guardado:', error);
-            } finally {
-                this.autoGuardando = false;
-            }
+        debouncedSave() {
+            // Autoguardado desactivado: no-op
         },
-        
+
         async guardarCompleto() {
             this.guardando = true;
             try {
                 const resultado = await this.guardarDatos(true);
                 if (resultado.success) {
-                    this.mostrarMensaje('Estudio guardado correctamente', 'success');
+                    this.mostrarMensaje('Estudio ecocardiográfico guardado', 'success');
                     // Abrir ventana de impresión
-                    const url = `{% url 'ecocardiograma:imprimir_estudio' 0 %}`.replace('0', this.estudio.id);
+                    let url = `{% url 'ecocardiograma:imprimir_estudio' 0 %}`.replace('0', this.estudio.id);
+                    if (this.firmar) {
+                        url += '?firma=1';
+                    }
                     window.open(url, '_blank');
                 } else {
-                    this.mostrarMensaje('Error al guardar el estudio', 'error');
+                    this.mostrarMensaje('Estudio ecocardiográfico no se pudo guardar por error', 'error');
                 }
             } catch (error) {
-                this.mostrarMensaje('Error al guardar el estudio', 'error');
+                this.mostrarMensaje('Estudio ecocardiográfico no se pudo guardar por error', 'error');
                 console.error('Error:', error);
             } finally {
                 this.guardando = false;
@@ -464,7 +446,7 @@ document.addEventListener('alpine:init', () => {
         
         async guardarDatos(completo = false) {
             if (!this.historiaId || this.historiaId === 'null' || this.historiaId === 'None') {
-                this.mostrarMensaje('Error al guardar el estudio (historia inválida)', 'error');
+                this.mostrarMensaje('Estudio ecocardiográfico no se pudo guardar por error', 'error');
                 return { success: false };
             }
             // Sincronizar segmentos desde miniapp antes de enviar
@@ -524,9 +506,13 @@ document.addEventListener('alpine:init', () => {
         
         mostrarMensaje(texto, tipo) {
             this.mensaje = { texto, tipo };
-            setTimeout(() => {
-                this.mensaje = { texto: '', tipo: '' };
-            }, 5000);
+            if (tipo === 'error') {
+                setTimeout(() => {
+                    if (this.mensaje.tipo === 'error') {
+                        this.mensaje = { texto: '', tipo: '' };
+                    }
+                }, 15000);
+            }
         }
     }));
 });
@@ -620,52 +606,33 @@ document.addEventListener('alpine:init', () => {
     x-data="ecocardiogramaSistema" 
     x-init="inicializar('{{ historia.id }}', '{{ estudio_id|default:'0' }}', JSON.parse('{{ estudio|default:'null'|to_json|escapejs }}'), JSON.parse('{{ conclusion|default:'null'|to_json|escapejs }}'), JSON.parse('{{ segmentos|default:'[]'|to_json|escapejs }}'))"
     data-historia-id="{{ historia.id }}"
-    class="mt-12"
+    class="space-y-6"
 >
     <!-- CSRF Token -->
-    {% csrf_token %}
+    <div hidden>
+        {% csrf_token %}
+    </div>
     
-    <!-- Auto-save indicator -->
-    <div x-show="autoGuardando" class="auto-save-indicator bg-blue-100 text-blue-800 px-4 py-2 rounded-lg shadow-lg">
-        <div class="flex items-center">
-            <svg class="animate-spin h-4 w-4 mr-2" fill="none" viewBox="0 0 24 24">
-                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path>
-            </svg>
-            Auto-guardando...
+    <div class="flex items-start justify-between">
+        <div class="text-left">
+            <h1 class="text-2xl font-semibold text-slate-900 text-left">Estudio ecocardiográfico doppler color</h1>
+            <p class="text-sm text-slate-600 text-left">con evaluación de deformación miocárdica</p>
+        </div>
+        <div class="text-right text-sm text-slate-600">
+            <div>Paciente: <span class="font-medium text-slate-900">{{ paciente.apellido }}, {{ paciente.nombre }}</span></div>
+            <div>Historia clínica: <span class="font-medium text-slate-900">{{ historia.id }}</span></div>
+            <div>Fecha de estudio: <span class="font-medium text-slate-900">
+                {% if estudio and estudio.fecha %}{{ estudio.fecha|date:"d/m/Y" }}{% else %}{% now "d/m/Y" %}{% endif %}
+            </span></div>
         </div>
     </div>
 
-    <!-- Header con datos del paciente -->
+    <!-- Datos biométricos -->
     <div class="bg-white shadow-md rounded-lg overflow-hidden">
-        <div class="bg-gray-200 px-6 py-4 flex justify-between items-center">
-            <h4 class="text-left text-lg font-semibold">Datos del Paciente:</h4>
-            <div class="flex space-x-2">
-                <button @click="autoGuardar()" class="text-blue-600 hover:text-blue-800" title="Auto-guardar">
-                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4"></path>
-                    </svg>
-                </button>
-            </div>
+        <div class="bg-gray-200 px-6 py-4">
+            <h4 class="text-left text-lg font-semibold">Datos biométricos:</h4>
         </div>
         <div class="p-6">
-            <!-- Datos básicos del paciente -->
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
-                <div>
-                    <label class="block font-medium text-gray-700">Paciente:</label>
-                    <p class="mt-1">{{ paciente.nombre }} {{ paciente.apellido }}</p>
-                </div>
-                <div>
-                    <label class="block font-medium text-gray-700">Historia Clínica:</label>
-                    <p class="mt-1">{{ historia.id|stringformat:"05d" }}</p>
-                </div>
-                <div>
-                    <label class="block font-medium text-gray-700">Fecha:</label>
-                    <p class="mt-1" x-text="new Date().toLocaleDateString('es-AR')"></p>
-                </div>
-            </div>
-            
-            <!-- Datos físicos y vitales -->
             <div class="grid grid-cols-1 md:grid-cols-5 gap-4">
                 <div>
                     <label class="block text-sm font-medium text-gray-700">Peso (Kg)</label>
@@ -694,17 +661,11 @@ document.addEventListener('alpine:init', () => {
             </div>
             
             <!-- Mensajes de estado -->
-            <div x-show="mensaje.texto" 
-                 :class="mensaje.tipo === 'success' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'" 
-                 class="mt-4 p-3 rounded" 
+            <div x-show="mensaje.texto"
+                 :style="mensaje.tipo === 'error' ? 'background:#fef2f2;border:1px solid #fecaca;color:#991b1b;' : 'background:#ecfdf5;border:1px solid #a7f3d0;color:#065f46;'"
+                 class="mt-4 p-3 rounded"
                  x-text="mensaje.texto"></div>
         </div>
-    </div>
-
-    <div class="w-full flex justify-center my-8">
-        <h4 class="underline text-center text-2xl font-semibold tracking-wide text-gray-800 w-full max-w-3xl">
-            Estudio ecocardiográfico doppler color con evaluación de deformación miocárdica
-        </h4>
     </div>
 
     <!-- Sistema de pestañas -->
@@ -1046,7 +1007,7 @@ document.addEventListener('alpine:init', () => {
                             </select>
                             <div x-show="conclusiones.situs" class="mt-2">
                                 <textarea x-model="conclusiones.comentario_situs" @input="debouncedSave()"
-                                          class="form-textarea w-full max-w-md" rows="3"
+                                          class="form-textarea w-full" rows="5" maxlength="512"
                                           placeholder="Comentario..."></textarea>
                             </div>
                         </div>
@@ -1063,7 +1024,7 @@ document.addEventListener('alpine:init', () => {
                             </select>
                             <div x-show="conclusiones.vasos_normoimplantados" class="mt-2">
                                 <textarea x-model="conclusiones.comentario_vasos" @input="debouncedSave()"
-                                          class="form-textarea w-full max-w-md" rows="3"
+                                          class="form-textarea w-full" rows="5" maxlength="512"
                                           placeholder="Comentario..."></textarea>
                             </div>
                         </div>
@@ -1080,7 +1041,7 @@ document.addEventListener('alpine:init', () => {
                             </select>
                             <div x-show="conclusiones.concordancia_atrioventricular" class="mt-2">
                                 <textarea x-model="conclusiones.comentario_concordancia" @input="debouncedSave()"
-                                          class="form-textarea w-full max-w-md" rows="3"
+                                          class="form-textarea w-full" rows="5" maxlength="512"
                                           placeholder="Comentario..."></textarea>
                             </div>
                         </div>
@@ -1154,7 +1115,7 @@ document.addEventListener('alpine:init', () => {
                             </select>
                             <div x-show="conclusiones.motilidad_segmentaria === '2'" class="mt-2">
                                 <textarea x-model="conclusiones.comentario_motilidad" @input="debouncedSave()" 
-                                          class="form-textarea w-full max-w-md" rows="3" 
+                                          class="form-textarea w-full" rows="5" maxlength="512"
                                           placeholder="Descripción de la anomalía..."></textarea>
                             </div>
                         </div>
@@ -1171,7 +1132,7 @@ document.addEventListener('alpine:init', () => {
                             </select>
                             <div x-show="conclusiones.valvula_aortica && conclusiones.valvula_aortica.length" class="mt-2">
                                 <textarea x-model="conclusiones.comentario_valvula_aortica" @input="debouncedSave()"
-                                          class="form-textarea w-full max-w-md" rows="3"
+                                          class="form-textarea w-full" rows="5" maxlength="512"
                                           placeholder="Comentario..."></textarea>
                             </div>
                         </div>
@@ -1188,7 +1149,7 @@ document.addEventListener('alpine:init', () => {
                             </select>
                             <div x-show="conclusiones.valvula_mitral && conclusiones.valvula_mitral.length" class="mt-2">
                                 <textarea x-model="conclusiones.comentario_valvula_mitral" @input="debouncedSave()"
-                                          class="form-textarea w-full max-w-md" rows="3"
+                                          class="form-textarea w-full" rows="5" maxlength="512"
                                           placeholder="Comentario..."></textarea>
                             </div>
                         </div>
@@ -1205,7 +1166,7 @@ document.addEventListener('alpine:init', () => {
                             </select>
                             <div x-show="conclusiones.valvula_tricuspide && conclusiones.valvula_tricuspide.length" class="mt-2">
                                 <textarea x-model="conclusiones.comentario_valvula_tricuspide" @input="debouncedSave()"
-                                          class="form-textarea w-full max-w-md" rows="3"
+                                          class="form-textarea w-full" rows="5" maxlength="512"
                                           placeholder="Comentario..."></textarea>
                             </div>
                         </div>
@@ -1222,7 +1183,7 @@ document.addEventListener('alpine:init', () => {
                             </select>
                             <div x-show="conclusiones.valvula_pulmonar && conclusiones.valvula_pulmonar.length" class="mt-2">
                                 <textarea x-model="conclusiones.comentario_valvula_pulmonar" @input="debouncedSave()"
-                                          class="form-textarea w-full max-w-md" rows="3"
+                                          class="form-textarea w-full" rows="5" maxlength="512"
                                           placeholder="Comentario..."></textarea>
                             </div>
                         </div>
@@ -1241,7 +1202,7 @@ document.addEventListener('alpine:init', () => {
                             </select>
                             <div x-show="conclusiones.pericardio && conclusiones.pericardio !== '1'" class="mt-2">
                                 <textarea x-model="conclusiones.comentario_pericardio" @input="debouncedSave()" 
-                                          class="form-textarea w-full max-w-md" rows="3" 
+                                          class="form-textarea w-full" rows="5" maxlength="512"
                                           placeholder="Comentario adicional..."></textarea>
                             </div>
                         </div>
@@ -1258,7 +1219,7 @@ document.addEventListener('alpine:init', () => {
                             </select>
                             <div x-show="conclusiones.defectos_congenitos === '2'" class="mt-2">
                                 <textarea x-model="conclusiones.comentario_defectos" @input="debouncedSave()" 
-                                          class="form-textarea w-full max-w-md" rows="3" 
+                                          class="form-textarea w-full" rows="5" maxlength="512"
                                           placeholder="Descripción de los defectos..."></textarea>
                             </div>
                         </div>
@@ -1275,11 +1236,8 @@ document.addEventListener('alpine:init', () => {
                 </div>
                 
                 <div class="p-6">
-                    <div class="mb-2 text-sm text-gray-600">
-                        <span x-text="1500 - (conclusiones.conclusion_texto || '').length">1500</span> caracteres restantes
-                    </div>
                     <textarea x-model="conclusiones.conclusion_texto" @input="debouncedSave()"
-                              maxlength="1500" 
+                              maxlength="8000" 
                               rows="15" 
                               class="form-textarea w-full"
                               placeholder="Escriba aquí la conclusión detallada..."></textarea>
@@ -1295,11 +1253,8 @@ document.addEventListener('alpine:init', () => {
                 </div>
                 
                 <div class="p-6">
-                    <div class="mb-2 text-sm text-gray-600">
-                        <span x-text="700 - (conclusiones.comentario_final || '').length">700</span> caracteres restantes
-                    </div>
                     <textarea x-model="conclusiones.comentario_final" @input="debouncedSave()"
-                              maxlength="700" 
+                              maxlength="8000" 
                               rows="8" 
                               class="form-textarea w-full"
                               placeholder="Escriba aquí el comentario final..."></textarea>
@@ -1309,7 +1264,11 @@ document.addEventListener('alpine:init', () => {
     </div>
 
     <!-- Botones de acción -->
-    <div class="text-center mt-8">
+    <div class="mt-8 flex flex-wrap items-center justify-center gap-4">
+        <label class="flex items-center gap-2 text-sm text-gray-600">
+            <input type="checkbox" x-model="firmar" class="rounded border-gray-300 text-red-600">
+            Firmar PDF
+        </label>
         <button @click="guardarCompleto()" 
                 :disabled="guardando" 
                 class="bg-red-600 hover:bg-red-700 disabled:bg-gray-400 text-white font-bold py-3 px-6 rounded inline-flex items-center">
@@ -1319,6 +1278,7 @@ document.addEventListener('alpine:init', () => {
             </svg>
             <span x-text="guardando ? 'Guardando...' : 'Guardar'"></span>
         </button>
+        <a href="{% url 'listar_buscar_historias' %}" class="text-sm text-gray-600 hover:text-gray-800">Volver</a>
     </div>
 
     <!-- Modal para selección de segmentos -->
@@ -1351,4 +1311,5 @@ document.addEventListener('alpine:init', () => {
         </div>
     </div>
 </div>
+<script src="{% static 'main/js/char_counter.js' %}"></script>
 {% endblock %}

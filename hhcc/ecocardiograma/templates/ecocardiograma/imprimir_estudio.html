@@ -17,7 +17,7 @@
 {% block meta %}
   <div>Nombre y apellido: {{ paciente.nombre }} {{ paciente.apellido }}</div>
   <div>Fecha del estudio: {{ estudio.fecha|date:"j \d\e F \d\e Y" }}</div>
-  <div>Historia Clínica: {{ estudio.historia.id|stringformat:"05d" }}</div>
+  <div>Historia Clínica: {{ estudio.historia.id }}</div>
 {% endblock %}
 
 {% block titles %}
@@ -35,28 +35,36 @@
             </div>
             <div class="dato">
                 <span class="dato-etiqueta">Historia Clínica:</span>
-                <span>{{ estudio.historia.id|stringformat:"05d" }}</span>
+                <span>{{ estudio.historia.id }}</span>
             </div>
             <div class="dato">
                 <span class="dato-etiqueta">Fecha de Estudio:</span>
                 <span>{{ estudio.fecha|date:"j \d\e F \d\e Y" }}</span>
             </div>
+            {% if show_peso %}
             <div class="dato">
                 <span class="dato-etiqueta">Peso:</span>
-                <span>{{ estudio.peso|default:'-' }} Kg.</span>
+                <span>{{ estudio.peso }} Kg.</span>
             </div>
+            {% endif %}
+            {% if show_talla %}
             <div class="dato">
                 <span class="dato-etiqueta">Talla:</span>
-                <span>{{ estudio.talla|default:'-' }} Mts.</span>
+                <span>{{ estudio.talla }} Mts.</span>
             </div>
+            {% endif %}
+            {% if show_pas %}
             <div class="dato">
                 <span class="dato-etiqueta">PAS:</span>
-                <span>{{ estudio.presion_sistolica|default:'-' }} mm Hg.</span>
+                <span>{{ estudio.presion_sistolica }} mm Hg.</span>
             </div>
+            {% endif %}
+            {% if show_pad %}
             <div class="dato">
                 <span class="dato-etiqueta">PAD:</span>
-                <span>{{ estudio.presion_diastolica|default:'-' }} mm Hg.</span>
+                <span>{{ estudio.presion_diastolica }} mm Hg.</span>
             </div>
+            {% endif %}
         </div>
     </div>
 

@@ -1,0 +1,17 @@
+# UI endpoints (valores reales, sandbox 8090)
+http://127.0.0.1:8090/ecocardiograma/8/
+http://127.0.0.1:8090/ecocardiograma/8/estudios/
+http://127.0.0.1:8090/ecocardiograma/imprimir_estudio/4/
+
+http://127.0.0.1:8090/carotidas/8/
+http://127.0.0.1:8090/carotidas/8/estudios/
+http://127.0.0.1:8090/carotidas/estudio/8/
+http://127.0.0.1:8090/carotidas/imprimir_estudio/8/8/
+
+http://127.0.0.1:8090/mmii/8/
+http://127.0.0.1:8090/mmii/8/estudios/
+http://127.0.0.1:8090/mmii/imprimir_estudio/5/8/
+
+http://127.0.0.1:8090/ecostress/8/
+http://127.0.0.1:8090/ecostress/8/estudios/
+http://127.0.0.1:8090/ecostress/imprimir_estudio/5/8/

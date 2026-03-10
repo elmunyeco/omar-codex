@@ -671,6 +671,11 @@ def imprimir_estudio(request, estudio_id):
         'print_header_text': "Consultorio Cardiológico Doctor Omar Prieto",
         'print_css_path': static_file_url("main/css/print.css"),
         'print_segmentos_path': static_file_url("ecocardiograma/images/segmentos.png"),
+        'print_show_signature': request.GET.get('firma') == '1',
+        'show_peso': _present(estudio.peso),
+        'show_talla': _present(estudio.talla),
+        'show_pas': _present(estudio.presion_sistolica),
+        'show_pad': _present(estudio.presion_diastolica),
     }
     
     html = render_to_string("ecocardiograma/imprimir_estudio.html", context)

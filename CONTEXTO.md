@@ -74,6 +74,12 @@ USE_SANDBOX_DB=1 python manage.py runserver 0.0.0.0:8090
  - Layout del header: `table` 40% logo / 60% datos; alineación derecha en datos.
  - Línea de separación: solo borde inferior del header (`border-bottom: 1px solid #e5e7eb`).
  - Margen superior de página para header: `@page margin-top: 50mm`.
+ - Títulos en PDF centrados y sin subrayado (estilos globales en `print.css`).
+
+## Títulos y textos libres (UI)
+- Títulos (`h1/h2/h3`) centrados y sin subrayado (estilos globales en `style.css`).
+- Contador de caracteres para campos de texto libre (JS común `main/static/main/js/char_counter.js`).
+- Límites: comentarios generales `512`, conclusiones `8000`.
 
 ## Logos (assets)
 - SVG final en raíz: `logo_omar_prieto.svg` y PNG `logo_omar_prieto.png`.
@@ -93,6 +99,16 @@ USE_SANDBOX_DB=1 python manage.py runserver 0.0.0.0:8090
    - `http://127.0.0.1:8000/carotidas/imprimir_estudio/7/7/`
    - `http://127.0.0.1:8000/mmii/imprimir_estudio/3/7/`
    - `http://127.0.0.1:8000/ecostress/imprimir_estudio/2/7/`
+ - Nuevos estudios con máximos (HC 8, sandbox 8090):
+   - Ecocardiograma `id=4` (conclusión B 8000, comentario final 8000).
+   - Carótidas `id=8` (comentarios 512).
+   - MMII `id=5` (conclusión 8000).
+   - Ecostress `id=5` (conclusión 8000).
+ - URLs PDF (sandbox 8090):
+   - `http://127.0.0.1:8090/ecocardiograma/imprimir_estudio/4/`
+   - `http://127.0.0.1:8090/carotidas/imprimir_estudio/8/8/`
+   - `http://127.0.0.1:8090/mmii/imprimir_estudio/5/8/`
+   - `http://127.0.0.1:8090/ecostress/imprimir_estudio/5/8/`
 
 ## i18n global
 - Se fuerza idioma `es-ar` para todas las requests mediante middleware.

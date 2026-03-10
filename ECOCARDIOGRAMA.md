@@ -9,6 +9,7 @@
 - Se removieron clases Tailwind en impresión.
 - El layout usa CSS propio (tablas, grilla, firma, botones de impresión).
 - Títulos y secciones usan los mismos separadores y jerarquía que carótidas.
+- Títulos en PDF centrados y sin subrayado (estilos globales en `print.css`).
 
 ## Archivos clave
 - `hhcc/ecocardiograma/templates/ecocardiograma/imprimir_estudio.html`
@@ -86,6 +87,9 @@
 - Botón principal: texto “Guardar” (antes “Guardar e Imprimir”).
 - Botón de imprimir del header y botón “Volver” quedaron comentados para ocultarlos.
 - Columnas numéricas del formulario usan “Nro.” en lugar de “#” para evitar caracteres sueltos en render.
+- Títulos (`h1/h2/h3`) centrados y sin subrayado (estilos globales).
+- Campos de comentarios con contador y límite `512` caracteres.
+- `Conclusión B` (`conclusion_texto`) y `comentario_final` con límite `8000` caracteres.
 
 ## URLs (formulario y listados)
 - Formulario base: `/ecocardiograma/<historia_id>/`

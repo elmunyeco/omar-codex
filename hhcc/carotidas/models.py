@@ -15,12 +15,12 @@ class CarotidasEstudio(models.Model):
         on_delete=models.CASCADE,
         related_name="carotidas_estudios",
     )
-    com_derecha = models.CharField(max_length=255, null=True, blank=True)
-    int_derecha = models.CharField(max_length=255, null=True, blank=True)
-    ext_derecha = models.CharField(max_length=255, null=True, blank=True)
-    com_izquierda = models.CharField(max_length=255, null=True, blank=True)
-    int_izquierda = models.CharField(max_length=255, null=True, blank=True)
-    ext_izquierda = models.CharField(max_length=255, null=True, blank=True)
+    com_derecha = models.CharField(max_length=512, null=True, blank=True)
+    int_derecha = models.CharField(max_length=512, null=True, blank=True)
+    ext_derecha = models.CharField(max_length=512, null=True, blank=True)
+    com_izquierda = models.CharField(max_length=512, null=True, blank=True)
+    int_izquierda = models.CharField(max_length=512, null=True, blank=True)
+    ext_izquierda = models.CharField(max_length=512, null=True, blank=True)
     art_vertebrales = models.CharField(max_length=255, null=True, blank=True)
     sugerencias = models.CharField(max_length=255, null=True, blank=True)
     id_com_der = models.PositiveIntegerField(default=0)

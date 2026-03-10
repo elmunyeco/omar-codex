@@ -1,4 +1,5 @@
 {% extends "base.html" %}
+{% load static %}
 
 {% block title %}Nuevo Estudio de Carótidas{% endblock %}
 
@@ -14,7 +15,8 @@
     intIzqText: '{{ form.int_izquierda.value|default_if_none:""|escapejs }}',
     extIzqText: '{{ form.ext_izquierda.value|default_if_none:""|escapejs }}',
     artVertebrales: '{{ form.art_vertebrales.value|default_if_none:""|escapejs }}',
-    sugerencias: '{{ form.sugerencias.value|default_if_none:""|escapejs }}'
+    sugerencias: '{{ form.sugerencias.value|default_if_none:""|escapejs }}',
+    firmar: false
   })"
   x-init="syncAll()"
   class="space-y-6"
@@ -28,10 +30,12 @@
     <div class="text-right text-sm text-slate-600">
       <div>Paciente: <span class="font-medium text-slate-900">{{ paciente.apellido }}, {{ paciente.nombre }}</span></div>
       <div>Historia clínica: <span class="font-medium text-slate-900">{{ historia.id }}</span></div>
+      <div>Fecha de estudio: <span class="font-medium text-slate-900">{% now "d/m/Y" %}</span></div>
     </div>
   </div>
 
-  <div id="carotidas-success" class="hidden rounded-md border border-emerald-200 bg-emerald-50 px-4 py-2 text-sm text-emerald-800"></div>
+  <div id="carotidas-success" class="hidden px-4 py-2 text-sm rounded" style="background:#ecfdf5;border:1px solid #a7f3d0;color:#065f46;"></div>
+  <div id="carotidas-error" class="hidden px-4 py-2 text-sm rounded" style="background:#fef2f2;border:1px solid #fecaca;color:#991b1b;"></div>
   {% if messages %}
     <div class="space-y-2">
       {% for message in messages %}
@@ -64,6 +68,7 @@
                 name="com_derecha"
                 x-model="comDerComentario"
                 rows="2"
+                maxlength="512"
                 placeholder="Detalle si seleccionaste Otras"
                 class="w-full rounded-md border border-slate-300 px-3 py-2 text-sm"
               ></textarea>
@@ -85,6 +90,7 @@
                 name="com_izquierda"
                 x-model="comIzqComentario"
                 rows="2"
+                maxlength="512"
                 placeholder="Detalle si seleccionaste Otras"
                 class="w-full rounded-md border border-slate-300 px-3 py-2 text-sm"
               ></textarea>
@@ -166,7 +172,7 @@
                 </div>
               </div>
             </div>
-            <textarea name="int_derecha" x-model="intDerText" rows="2" class="w-full rounded-md border border-slate-300 px-3 py-2 text-sm" placeholder="Texto libre del informe"></textarea>
+            <textarea name="int_derecha" x-model="intDerText" rows="2" maxlength="512" class="w-full rounded-md border border-slate-300 px-3 py-2 text-sm" placeholder="Texto libre del informe"></textarea>
           </div>
 
           <div class="space-y-3">
@@ -209,7 +215,7 @@
                 </div>
               </div>
             </div>
-            <textarea name="int_izquierda" x-model="intIzqText" rows="2" class="w-full rounded-md border border-slate-300 px-3 py-2 text-sm" placeholder="Texto libre del informe"></textarea>
+            <textarea name="int_izquierda" x-model="intIzqText" rows="2" maxlength="512" class="w-full rounded-md border border-slate-300 px-3 py-2 text-sm" placeholder="Texto libre del informe"></textarea>
           </div>
         </div>
       </section>
@@ -240,7 +246,7 @@
                 <label class="flex items-center gap-2"><input type="radio" value="Estenosis > 60%" x-model="extDerEstenosis" @change="syncExtDer()">&gt; 60%</label>
               </div>
             </div>
-            <textarea name="ext_derecha" x-model="extDerText" rows="2" class="w-full rounded-md border border-slate-300 px-3 py-2 text-sm" placeholder="Texto libre del informe"></textarea>
+            <textarea name="ext_derecha" x-model="extDerText" rows="2" maxlength="512" class="w-full rounded-md border border-slate-300 px-3 py-2 text-sm" placeholder="Texto libre del informe"></textarea>
           </div>
 
           <div class="space-y-3">
@@ -266,7 +272,7 @@
                 <label class="flex items-center gap-2"><input type="radio" value="Estenosis > 60%" x-model="extIzqEstenosis" @change="syncExtIzq()">&gt; 60%</label>
               </div>
             </div>
-            <textarea name="ext_izquierda" x-model="extIzqText" rows="2" class="w-full rounded-md border border-slate-300 px-3 py-2 text-sm" placeholder="Texto libre del informe"></textarea>
+            <textarea name="ext_izquierda" x-model="extIzqText" rows="2" maxlength="512" class="w-full rounded-md border border-slate-300 px-3 py-2 text-sm" placeholder="Texto libre del informe"></textarea>
           </div>
         </div>
       </section>
@@ -319,7 +325,11 @@
         </div>
       </section>
 
-      <div class="flex flex-wrap items-center gap-3">
+      <div class="flex flex-wrap items-center justify-center gap-4">
+        <label class="flex items-center gap-2 text-sm text-slate-600">
+          <input type="checkbox" x-model="firmar" class="rounded border-slate-300 text-red-600">
+          Firmar PDF
+        </label>
         <button type="submit" class="rounded-md bg-red-600 px-4 py-2 text-sm font-semibold text-white hover:bg-red-700" :disabled="guardando">
           <span x-show="!guardando">Guardar</span>
           <span x-show="guardando">Guardando...</span>
@@ -369,9 +379,6 @@
         </div>
       </div>
 
-      <div class="rounded-lg border border-slate-200 bg-amber-50 p-4 text-xs text-amber-800">
-        Podés editar manualmente el texto del informe en cada campo si necesitás ajustar detalles.
-      </div>
     </aside>
   </form>
 </div>
@@ -407,6 +414,7 @@
       artVertebralesModo: '',
       artVertebralesLado: '',
       sugerencias: initial.sugerencias || '',
+      firmar: !!initial.firmar,
       guardando: false,
       syncComDerText(event) {
         const option = event.target.options[event.target.selectedIndex];
@@ -520,24 +528,41 @@
             body: formData
           });
           const data = await response.json();
-          if (response.ok && data.success) {
-            const msg = document.getElementById('carotidas-success');
-            if (msg) {
-              msg.textContent = 'Estudio doppler de vasos de cuello guardado.';
-              msg.classList.remove('hidden');
-            }
-            const url = `{% url 'carotidas:carotidas_imprimir' 0 0 %}`
+            if (response.ok && data.success) {
+              const msg = document.getElementById('carotidas-success');
+              const err = document.getElementById('carotidas-error');
+              if (msg) {
+                msg.textContent = 'Estudio de carótidas guardado';
+                msg.classList.remove('hidden');
+              }
+              if (err) {
+                err.classList.add('hidden');
+              }
+            let url = `{% url 'carotidas:carotidas_imprimir' 0 0 %}`
               .replace('/0/0/', `/${data.estudio_id}/${data.historia_id}/`);
+            if (this.firmar) {
+              url += '?firma=1';
+            }
             if (popup) {
               popup.location = url;
             } else {
               window.open(url, '_blank');
             }
           } else {
-            alert('Se produjo un error al guardar el estudio.');
+            const err = document.getElementById('carotidas-error');
+              if (err) {
+                err.textContent = 'Estudio de carótidas no se pudo guardar por error';
+                err.classList.remove('hidden');
+                setTimeout(() => err.classList.add('hidden'), 15000);
+              }
           }
         } catch (e) {
-          alert('Se produjo un error al guardar el estudio.');
+          const err = document.getElementById('carotidas-error');
+          if (err) {
+            err.textContent = 'Estudio de carótidas no se pudo guardar por error';
+            err.classList.remove('hidden');
+            setTimeout(() => err.classList.add('hidden'), 15000);
+          }
         } finally {
           this.guardando = false;
         }
@@ -585,4 +610,5 @@
     }
   }
 </script>
+<script src="{% static 'main/js/char_counter.js' %}"></script>
 {% endblock %}

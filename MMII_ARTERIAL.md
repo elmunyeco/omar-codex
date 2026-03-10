@@ -17,21 +17,21 @@
   - `idEstudio` (0 si es nuevo)
 
 ### Campos (textareas)
-Sistema arterial derecho (max 300):
+Sistema arterial derecho (max 512):
 - `artFemComunDerechas`
 - `artFemSuperficialDerechas`
 - `artFemProfundaDerechas`
 - `artPopliteaDerechas`
 - `artInfrapatelaresDerechas`
 
-Sistema arterial izquierdo (max 300):
+Sistema arterial izquierdo (max 512):
 - `artFemComunIzquierdas`
 - `artFemSuperficialIzquierdas`
 - `artFemProfundaIzquierdas`
 - `artPopliteaIzquierdas`
 - `artInfrapatelaresIzquierdas`
 
-Conclusiones (max 500):
+Conclusiones (max 8000):
 - `conclusiones`
 
 ### Defaults legacy
@@ -88,6 +88,8 @@ Conclusiones (max 500):
   - Defaults del legacy para todas las arterias y conclusión.
   - Submit AJAX abre popup antes del fetch (patrón de carótidas/ecostress).
   - Mensaje de éxito se muestra en el mismo evento AJAX (sin recarga).
+  - Títulos (`h1/h2/h3`) centrados y sin subrayado (estilos globales).
+  - Campos de texto libre con contador y límite `512` caracteres (salvo `conclusion`, `8000`).
 - Impresión:
   - `hhcc/mmii/templates/mmii/imprimir_estudio.html` extiende `print_base.html`.
   - WeasyPrint en `mmii/views.py` (PDF inline).
@@ -96,6 +98,7 @@ Conclusiones (max 500):
   - Logo y CSS se resuelven con `static_file_url()` (sin paths absolutos).
   - Logo en membrete: `logo_omar_prieto.svg` con fallback a `logo.png`.
   - Tamaño de logo en PDF: `.logo { height: 48px; max-width: 270px; object-fit: contain; }`.
+  - Títulos en PDF centrados y sin subrayado (estilos globales en `print.css`).
 
 ## RAG
 - HTML y assets guardados en `Scrap_cardioprietohc/data/raw/mmii/`.

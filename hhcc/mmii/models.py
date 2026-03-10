@@ -1,4 +1,5 @@
 from django.db import models
+from django.core.validators import MaxLengthValidator
 from django.utils import timezone
 
 from main.models import HistoriaClinica
@@ -18,36 +19,71 @@ class MmiiEstudio(models.Model):
         db_column="idHC",
     )
     art_fem_comun_derecha = models.TextField(
-        db_column="artFemComunDerecha", null=True, blank=True
+        db_column="artFemComunDerecha",
+        null=True,
+        blank=True,
+        validators=[MaxLengthValidator(512)],
     )
     art_fem_superficial_derecha = models.TextField(
-        db_column="artFemSuperficialDerecha", null=True, blank=True
+        db_column="artFemSuperficialDerecha",
+        null=True,
+        blank=True,
+        validators=[MaxLengthValidator(512)],
     )
     art_fem_profunda_derecha = models.TextField(
-        db_column="artFemProfundaDerecha", null=True, blank=True
+        db_column="artFemProfundaDerecha",
+        null=True,
+        blank=True,
+        validators=[MaxLengthValidator(512)],
     )
     art_poplitea_derecha = models.TextField(
-        db_column="artPopliteaDerecha", null=True, blank=True
+        db_column="artPopliteaDerecha",
+        null=True,
+        blank=True,
+        validators=[MaxLengthValidator(512)],
     )
     art_infrapatelares_derecha = models.TextField(
-        db_column="artInfrapatelaresDerecha", null=True, blank=True
+        db_column="artInfrapatelaresDerecha",
+        null=True,
+        blank=True,
+        validators=[MaxLengthValidator(512)],
     )
     art_fem_comun_izquierda = models.TextField(
-        db_column="artFemComunIzquierda", null=True, blank=True
+        db_column="artFemComunIzquierda",
+        null=True,
+        blank=True,
+        validators=[MaxLengthValidator(512)],
     )
     art_fem_superficial_izquierda = models.TextField(
-        db_column="artFemSuperficialIzquierda", null=True, blank=True
+        db_column="artFemSuperficialIzquierda",
+        null=True,
+        blank=True,
+        validators=[MaxLengthValidator(512)],
     )
     art_fem_profunda_izquierda = models.TextField(
-        db_column="artFemProfundaIzquierda", null=True, blank=True
+        db_column="artFemProfundaIzquierda",
+        null=True,
+        blank=True,
+        validators=[MaxLengthValidator(512)],
     )
     art_poplitea_izquierda = models.TextField(
-        db_column="artPopliteaIzquierda", null=True, blank=True
+        db_column="artPopliteaIzquierda",
+        null=True,
+        blank=True,
+        validators=[MaxLengthValidator(512)],
     )
     art_infrapatelares_izquierda = models.TextField(
-        db_column="artInfrapatelaresIzquierda", null=True, blank=True
+        db_column="artInfrapatelaresIzquierda",
+        null=True,
+        blank=True,
+        validators=[MaxLengthValidator(512)],
     )
-    conclusion = models.TextField(db_column="conclusion", null=True, blank=True)
+    conclusion = models.TextField(
+        db_column="conclusion",
+        null=True,
+        blank=True,
+        validators=[MaxLengthValidator(8000)],
+    )
     fecha_estudio = models.DateField(default=timezone.localdate)
 
     class Meta:
