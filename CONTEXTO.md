@@ -74,12 +74,19 @@ USE_SANDBOX_DB=1 python manage.py runserver 0.0.0.0:8090
  - Layout del header: `table` 40% logo / 60% datos; alineación derecha en datos.
  - Línea de separación: solo borde inferior del header (`border-bottom: 1px solid #e5e7eb`).
  - Margen superior de página para header: `@page margin-top: 50mm`.
- - Títulos en PDF centrados y sin subrayado (estilos globales en `print.css`).
+- Títulos en PDF centrados y sin subrayado (estilos globales en `print.css`).
 
 ## Títulos y textos libres (UI)
 - Títulos (`h1/h2/h3`) centrados y sin subrayado (estilos globales en `style.css`).
-- Contador de caracteres para campos de texto libre (JS común `main/static/main/js/char_counter.js`).
+- Contador de caracteres solo para campos con `maxlength > 512` (JS común `main/static/main/js/char_counter.js`).
 - Límites: comentarios generales `512`, conclusiones `8000`.
+- Bloque de acciones (Firmar PDF + Guardar + Volver) centrado en todos los estudios.
+- Mensajes de guardado: éxito en verde, error en rojo; el error se auto‑cierra a los 15s, el éxito no.
+ 
+## Firma PDF (opcional)
+- Todos los PDFs soportan firma opcional con `?firma=1`.
+- Firma visible: “Dr. Omar Prieto” / “cardiologo” alineado a la derecha.
+- Separación antes de la firma aumentada (más aire visual).
 
 ## Logos (assets)
 - SVG final en raíz: `logo_omar_prieto.svg` y PNG `logo_omar_prieto.png`.

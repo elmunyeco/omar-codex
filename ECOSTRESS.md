@@ -68,8 +68,7 @@
 - App nueva: `hhcc/ecostress` (registrada en `hhcc/hhcc/settings.py`).
 - URLs:
   - Formulario base: `/ecostress/<historia_id>/`
-  - Crear estudio nuevo: `/ecostress/<historia_id>/?action=crear`
-  - Recuperar estudio específico: `/ecostress/<historia_id>/?action=recuperar&estudio=<id>`
+  - Crear estudio nuevo: `/ecostress/<historia_id>/nuevo/` (alias del base)
   - Listado simple (HTML sin estilo): `/ecostress/<historia_id>/estudios/`
   - PDF: `/ecostress/imprimir_estudio/<estudio_id>/<historia_id>/`
 - Modelo: `EcostressEstudio` mapeado a tabla legacy `stress`.
@@ -86,7 +85,8 @@
   - La fecha se setea automáticamente al guardar (fecha actual). No es editable en formulario.
   - `tipo_apremio` inicia en `Físico` (sin opción `:: Seleccionar ::`).
   - Submit AJAX abre popup antes del fetch (patrón de carótidas).
-  - Mensaje de éxito se muestra en el mismo evento AJAX (sin recarga).
+  - Mensajes de guardado: éxito en verde (sin timer), error en rojo (auto‑cierre a los 15s).
+  - Bloque de acciones centrado: `Firmar PDF` (checkbox) + `Guardar` + `Volver`.
 - Impresión:
   - `hhcc/ecostress/templates/ecostress/imprimir_estudio.html` extiende `print_base.html`.
   - WeasyPrint en `ecostress/views.py` (PDF inline).
@@ -97,10 +97,13 @@
   - Logo en membrete: `logo_omar_prieto.svg` con fallback a `logo.png`.
   - Tamaño de logo en PDF: `.logo { height: 48px; max-width: 270px; object-fit: contain; }`.
   - Títulos en PDF centrados y sin subrayado (estilos globales en `print.css`).
+  - Firma opcional si se llama el PDF con `?firma=1`.
 
 ## UI (formulario)
 - Títulos (`h1/h2/h3`) centrados y sin subrayado (estilos globales).
-- Campos de texto libre con contador y límite `512` caracteres (salvo `conclusion`, `8000`).
+- Encabezado con Nombre / Historia clínica / Fecha de estudio (alineado a la derecha).
+- Texto libre con límite `512` caracteres (salvo `conclusion`, `8000`).
+- Contador de caracteres solo para campos con `maxlength > 512` (en práctica, solo conclusiones).
 
 ## RAG
 - HTML y assets ya guardados en `Scrap_cardioprietohc/data/raw/ecostress/`.

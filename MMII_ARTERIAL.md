@@ -71,8 +71,7 @@ Conclusiones (max 8000):
 - App nueva: `hhcc/mmii` (registrada en `hhcc/hhcc/settings.py`).
 - URLs:
   - Formulario base: `/mmii/<historia_id>/`
-  - Crear estudio nuevo: `/mmii/<historia_id>/?action=crear`
-  - Recuperar estudio específico: `/mmii/<historia_id>/?action=recuperar&estudio=<id>`
+  - Crear estudio nuevo: `/mmii/<historia_id>/nuevo/` (alias del base)
   - Listado simple (HTML sin estilo): `/mmii/<historia_id>/estudios/`
   - PDF: `/mmii/imprimir_estudio/<estudio_id>/<historia_id>/`
 - Modelo: `MmiiEstudio` mapeado a tabla `mmii`.
@@ -87,9 +86,12 @@ Conclusiones (max 8000):
   - Formulario Tailwind/Alpine en `hhcc/mmii/templates/mmii/nuevo_estudio.html`.
   - Defaults del legacy para todas las arterias y conclusión.
   - Submit AJAX abre popup antes del fetch (patrón de carótidas/ecostress).
-  - Mensaje de éxito se muestra en el mismo evento AJAX (sin recarga).
+  - Mensajes de guardado: éxito en verde (sin timer), error en rojo (auto‑cierre a los 15s).
+  - Bloque de acciones centrado: `Firmar PDF` (checkbox) + `Guardar` + `Volver`.
   - Títulos (`h1/h2/h3`) centrados y sin subrayado (estilos globales).
-  - Campos de texto libre con contador y límite `512` caracteres (salvo `conclusion`, `8000`).
+  - Encabezado con Nombre / Historia clínica / Fecha de estudio (alineado a la derecha).
+  - Texto libre con límite `512` caracteres (salvo `conclusion`, `8000`).
+  - Contador de caracteres solo para campos con `maxlength > 512` (en práctica, solo conclusiones).
 - Impresión:
   - `hhcc/mmii/templates/mmii/imprimir_estudio.html` extiende `print_base.html`.
   - WeasyPrint en `mmii/views.py` (PDF inline).
@@ -99,6 +101,7 @@ Conclusiones (max 8000):
   - Logo en membrete: `logo_omar_prieto.svg` con fallback a `logo.png`.
   - Tamaño de logo en PDF: `.logo { height: 48px; max-width: 270px; object-fit: contain; }`.
   - Títulos en PDF centrados y sin subrayado (estilos globales en `print.css`).
+  - Firma opcional si se llama el PDF con `?firma=1`.
 
 ## RAG
 - HTML y assets guardados en `Scrap_cardioprietohc/data/raw/mmii/`.

@@ -1,8 +1,8 @@
 # TODO
 
 ## Impresión (Ecocardiograma)
-- [ ] Generar PDF real (WeasyPrint) como carótidas.
-- [ ] Ocultar secciones vacías en impresión PDF (solo renderizar lo completado).
+- [x] Generar PDF real (WeasyPrint) como carótidas.
+- [x] Ocultar secciones vacías en impresión PDF (solo renderizar lo completado).
 
 ## ECOSTRESS
 - [x] Implementar app Django `ecostress` (modelo, form, vistas, templates, PDF).

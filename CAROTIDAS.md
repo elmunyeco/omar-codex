@@ -65,6 +65,7 @@
 - Submit AJAX: guarda y abre nueva ventana con el PDF; popup se abre antes del fetch.
 - Mensaje de éxito se muestra en el mismo evento AJAX (sin recarga).
 - Títulos en PDF centrados y sin subrayado (estilos globales en `print.css`).
+- Firma opcional con `?firma=1` (Dr. Omar Prieto / cardiologo, alineado a la derecha).
 
 ## Template base de impresión
 - Base común: `hhcc/main/templates/print_base.html`.
@@ -74,7 +75,10 @@
 
 ## UI (formulario)
 - Títulos (`h1/h2/h3`) centrados y sin subrayado (estilos globales).
-- Campos de texto libre con contador y límite `512` caracteres.
+- Campos de texto libre con límite `512` (sin contador).
+- Encabezado superior derecho: Paciente / Historia clínica / Fecha de estudio.
+- Bloque de acciones centrado: Firmar PDF (checkbox) + Guardar + Volver.
+- Mensajes de guardado: éxito en verde, error en rojo; el error se auto‑cierra a los 15s, el éxito no.
 
 ## URLs actuales
 - Formulario base: `/carotidas/<historia_id>/`

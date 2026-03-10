@@ -78,18 +78,23 @@
 - El gráfico impreso incluye la capa de color de segmentos según estado (mismos colores que el formulario).
 - Fix: en `imprimir_estudio` se corrigió el armado de `segmentos_detalle/segmentos_colores` para que el SVG no quede en blanco.
 - Ajuste: tabla de segmentos compacta debajo del gráfico, con nombre y estado en dos líneas por celda.
-- Se quitó la firma final (línea + “Dr. Omar Prieto / Cardiólogo”) del PDF.
+- Firma opcional con `?firma=1` (Dr. Omar Prieto / cardiologo, alineado a la derecha).
 - Pie de página común (en `print_base.html`): 2 renglones en blanco, línea divisoria, “Emitido DD/MM/AAAA” a la izquierda, “Dr. Omar Prieto” a la derecha, y “cardiologo” alineado a la derecha debajo.
 - Logo en membrete: `logo_omar_prieto.svg` con fallback a `logo.png`.
 - Tamaño de logo en PDF: `.logo { height: 48px; max-width: 270px; object-fit: contain; }`.
+- Datos biométricos (Peso/Talla/PAS/PAD) se imprimen solo si son > 0 (no imprime ceros).
 
 ## UI (formulario)
 - Botón principal: texto “Guardar” (antes “Guardar e Imprimir”).
-- Botón de imprimir del header y botón “Volver” quedaron comentados para ocultarlos.
 - Columnas numéricas del formulario usan “Nro.” en lugar de “#” para evitar caracteres sueltos en render.
 - Títulos (`h1/h2/h3`) centrados y sin subrayado (estilos globales).
-- Campos de comentarios con contador y límite `512` caracteres.
-- `Conclusión B` (`conclusion_texto`) y `comentario_final` con límite `8000` caracteres.
+- Campos de comentarios con límite `512` (sin contador).
+- `Conclusión B` (`conclusion_texto`) y `comentario_final` con límite `8000` (con contador).
+- Encabezado superior derecho: Paciente / Historia clínica / Fecha de estudio (sin padding de ceros).
+- Card inicial: solo “Datos biométricos”.
+- Autoguardado desactivado; el guardado es solo con botón rojo.
+- Mensajes de guardado: éxito en verde, error en rojo; el error se auto‑cierra a los 15s, el éxito no.
+- Bloque de acciones centrado: Firmar PDF (checkbox) + Guardar + Volver.
 
 ## URLs (formulario y listados)
 - Formulario base: `/ecocardiograma/<historia_id>/`
