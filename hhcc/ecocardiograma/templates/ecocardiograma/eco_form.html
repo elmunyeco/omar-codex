@@ -131,6 +131,42 @@ document.addEventListener('alpine:init', () => {
             { valor: '6', texto: 'Estenosis de grado moderado' },
             { valor: '7', texto: 'Estenosis de grado severo' }
         ],
+
+        opcionesSitus: [
+            { valor: '1', texto: 'Solitus' },
+            { valor: '2', texto: 'Inversus' },
+            { valor: '3', texto: 'Indeterminado' }
+        ],
+
+        opcionesSiNo: [
+            { valor: '1', texto: 'No' },
+            { valor: '2', texto: 'Sí' }
+        ],
+
+        opcionesFuncionSistolica: [
+            { valor: '1', texto: 'Conservada' },
+            { valor: '2', texto: 'Deterioro de grado leve' },
+            { valor: '3', texto: 'Deterioro de grado moderado' },
+            { valor: '4', texto: 'Deterioro de grado severo' }
+        ],
+
+        opcionesFuncionDiastolica: [
+            { valor: '1', texto: 'Normal' },
+            { valor: '2', texto: 'Patrón de relajación prolongada' },
+            { valor: '3', texto: 'Patrón pseudonormalizado' }
+        ],
+
+        opcionesMotilidad: [
+            { valor: '1', texto: 'Normal' },
+            { valor: '2', texto: 'Anormal' }
+        ],
+
+        opcionesPericardio: [
+            { valor: '1', texto: 'Libre' },
+            { valor: '2', texto: 'Derrame de grado leve' },
+            { valor: '3', texto: 'Derrame de grado moderado' },
+            { valor: '4', texto: 'Derrame de grado severo' }
+        ],
         
         // Estados de segmentos
         estadosSegmentos: {
@@ -414,6 +450,49 @@ document.addEventListener('alpine:init', () => {
             } else {
                 this.conclusiones[campo] = this.conclusiones[campo].filter(v => v !== valor);
             }
+        },
+
+        textoDesdeOpciones(opciones, valores) {
+            if (!valores || (Array.isArray(valores) && valores.length === 0)) {
+                return '';
+            }
+            const lista = Array.isArray(valores) ? valores.map(String) : [String(valores)];
+            return opciones
+                .filter((op) => lista.includes(String(op.valor)))
+                .map((op) => op.texto)
+                .join(', ');
+        },
+
+        previewItems() {
+            const items = [];
+            const add = (label, value, comentario) => {
+                const tieneContenido = (value && String(value).trim().length > 0) || (comentario && String(comentario).trim().length > 0);
+                if (!tieneContenido) return;
+                items.push({
+                    label,
+                    value: value || '',
+                    comentario: comentario || ''
+                });
+            };
+
+            add('Situs', this.textoDesdeOpciones(this.opcionesSitus, this.conclusiones.situs), this.conclusiones.comentario_situs);
+            add('Vasos normo implantados', this.textoDesdeOpciones(this.opcionesSiNo, this.conclusiones.vasos_normoimplantados), this.conclusiones.comentario_vasos);
+            add('Concordancia atrio ventricular', this.textoDesdeOpciones(this.opcionesSiNo, this.conclusiones.concordancia_atrioventricular), this.conclusiones.comentario_concordancia);
+            add('Aurícula izquierda', this.textoDesdeOpciones(this.opcionesAuriculaIzq, this.conclusiones.auricula_izq));
+            add('Ventrículo izquierdo', this.textoDesdeOpciones(this.opcionesVentriculoIzq, this.conclusiones.ventriculo_izq));
+            add('Función sistólica', this.textoDesdeOpciones(this.opcionesFuncionSistolica, this.conclusiones.funcion_sistolica));
+            add('Función diastólica', this.textoDesdeOpciones(this.opcionesFuncionDiastolica, this.conclusiones.funcion_diastolica));
+            add('Motilidad segmentaria', this.textoDesdeOpciones(this.opcionesMotilidad, this.conclusiones.motilidad_segmentaria), this.conclusiones.comentario_motilidad);
+            add('Válvula aórtica', this.textoDesdeOpciones(this.opcionesValvula, this.conclusiones.valvula_aortica), this.conclusiones.comentario_valvula_aortica);
+            add('Válvula mitral', this.textoDesdeOpciones(this.opcionesValvula, this.conclusiones.valvula_mitral), this.conclusiones.comentario_valvula_mitral);
+            add('Válvula tricúspide', this.textoDesdeOpciones(this.opcionesValvula, this.conclusiones.valvula_tricuspide), this.conclusiones.comentario_valvula_tricuspide);
+            add('Válvula pulmonar', this.textoDesdeOpciones(this.opcionesValvula, this.conclusiones.valvula_pulmonar), this.conclusiones.comentario_valvula_pulmonar);
+            add('Pericardio', this.textoDesdeOpciones(this.opcionesPericardio, this.conclusiones.pericardio), this.conclusiones.comentario_pericardio);
+            add('Imágenes agregadas y/o defectos congénitos', this.textoDesdeOpciones(this.opcionesSiNo, this.conclusiones.defectos_congenitos), this.conclusiones.comentario_defectos);
+            add('Conclusión B', this.conclusiones.conclusion_texto);
+            add('Comentario final', this.conclusiones.comentario_final);
+
+            return items;
         },
         
         // Guardado
@@ -999,7 +1078,7 @@ document.addEventListener('alpine:init', () => {
                     <div class="divConclusiones">
                         <label class="block font-medium text-gray-700 mb-2">Situs:</label>
                         <div class="space-y-2">
-                            <select x-model="conclusiones.situs" @change="debouncedSave()" class="form-select max-w-md">
+                            <select x-model="conclusiones.situs" @change="debouncedSave()" class="form-select w-full">
                                 <option value="">:: Seleccionar ::</option>
                                 <option value="1">Solitus</option>
                                 <option value="2">Inversus</option>
@@ -1017,7 +1096,7 @@ document.addEventListener('alpine:init', () => {
                     <div class="divConclusiones">
                         <label class="block font-medium text-gray-700 mb-2">Vasos normo implantados:</label>
                         <div class="space-y-2">
-                            <select x-model="conclusiones.vasos_normoimplantados" @change="debouncedSave()" class="form-select max-w-md">
+                            <select x-model="conclusiones.vasos_normoimplantados" @change="debouncedSave()" class="form-select w-full">
                                 <option value="">:: Seleccionar ::</option>
                                 <option value="1">No</option>
                                 <option value="2">Sí</option>
@@ -1034,7 +1113,7 @@ document.addEventListener('alpine:init', () => {
                     <div class="divConclusiones">
                         <label class="block font-medium text-gray-700 mb-2">Concordancia atrio ventricular:</label>
                         <div class="space-y-2">
-                            <select x-model="conclusiones.concordancia_atrioventricular" @change="debouncedSave()" class="form-select max-w-md">
+                            <select x-model="conclusiones.concordancia_atrioventricular" @change="debouncedSave()" class="form-select w-full">
                                 <option value="">:: Seleccionar ::</option>
                                 <option value="1">No</option>
                                 <option value="2">Sí</option>
@@ -1084,7 +1163,7 @@ document.addEventListener('alpine:init', () => {
                     <!-- Función sistólica -->
                     <div class="divConclusiones">
                         <label class="block font-medium text-gray-700 mb-2">Función sistólica del ventrículo izquierdo:</label>
-                        <select x-model="conclusiones.funcion_sistolica" @change="debouncedSave()" class="form-select max-w-md">
+                        <select x-model="conclusiones.funcion_sistolica" @change="debouncedSave()" class="form-select w-full">
                             <option value="">:: Seleccionar ::</option>
                             <option value="1">Conservada</option>
                             <option value="2">Deterioro de grado leve</option>
@@ -1096,7 +1175,7 @@ document.addEventListener('alpine:init', () => {
                     <!-- Función diastólica -->
                     <div class="divConclusiones">
                         <label class="block font-medium text-gray-700 mb-2">Función diastólica del ventrículo izquierdo:</label>
-                        <select x-model="conclusiones.funcion_diastolica" @change="debouncedSave()" class="form-select max-w-md">
+                        <select x-model="conclusiones.funcion_diastolica" @change="debouncedSave()" class="form-select w-full">
                             <option value="">:: Seleccionar ::</option>
                             <option value="1">Normal</option>
                             <option value="2">Patrón de relajación prolongada</option>
@@ -1108,7 +1187,7 @@ document.addEventListener('alpine:init', () => {
                     <div class="divConclusiones">
                         <label class="block font-medium text-gray-700 mb-2">Motilidad Segmentaria:</label>
                         <div class="space-y-2">
-                            <select x-model="conclusiones.motilidad_segmentaria" @change="debouncedSave()" class="form-select max-w-md">
+                            <select x-model="conclusiones.motilidad_segmentaria" @change="debouncedSave()" class="form-select w-full">
                                 <option value="">:: Seleccionar ::</option>
                                 <option value="1">Normal</option>
                                 <option value="2">Anormal</option>
@@ -1125,7 +1204,7 @@ document.addEventListener('alpine:init', () => {
                     <div class="divConclusiones">
                         <label class="block font-medium text-gray-700 mb-2">Válvula Aórtica:</label>
                         <div class="space-y-2">
-                            <select multiple x-model="conclusiones.valvula_aortica" @change="debouncedSave()" class="form-select max-w-md">
+                            <select multiple x-model="conclusiones.valvula_aortica" @change="debouncedSave()" class="form-select w-full">
                                 <template x-for="opcion in opcionesValvula" :key="`va-${opcion.valor}`">
                                     <option :value="opcion.valor" x-text="opcion.texto"></option>
                                 </template>
@@ -1142,7 +1221,7 @@ document.addEventListener('alpine:init', () => {
                     <div class="divConclusiones">
                         <label class="block font-medium text-gray-700 mb-2">Válvula Mitral:</label>
                         <div class="space-y-2">
-                            <select multiple x-model="conclusiones.valvula_mitral" @change="debouncedSave()" class="form-select max-w-md">
+                            <select multiple x-model="conclusiones.valvula_mitral" @change="debouncedSave()" class="form-select w-full">
                                 <template x-for="opcion in opcionesValvula" :key="`vm-${opcion.valor}`">
                                     <option :value="opcion.valor" x-text="opcion.texto"></option>
                                 </template>
@@ -1159,7 +1238,7 @@ document.addEventListener('alpine:init', () => {
                     <div class="divConclusiones">
                         <label class="block font-medium text-gray-700 mb-2">Válvula Tricúspide:</label>
                         <div class="space-y-2">
-                            <select multiple x-model="conclusiones.valvula_tricuspide" @change="debouncedSave()" class="form-select max-w-md">
+                            <select multiple x-model="conclusiones.valvula_tricuspide" @change="debouncedSave()" class="form-select w-full">
                                 <template x-for="opcion in opcionesValvula" :key="`vt-${opcion.valor}`">
                                     <option :value="opcion.valor" x-text="opcion.texto"></option>
                                 </template>
@@ -1176,7 +1255,7 @@ document.addEventListener('alpine:init', () => {
                     <div class="divConclusiones">
                         <label class="block font-medium text-gray-700 mb-2">Válvula Pulmonar:</label>
                         <div class="space-y-2">
-                            <select multiple x-model="conclusiones.valvula_pulmonar" @change="debouncedSave()" class="form-select max-w-md">
+                            <select multiple x-model="conclusiones.valvula_pulmonar" @change="debouncedSave()" class="form-select w-full">
                                 <template x-for="opcion in opcionesValvula" :key="`vp-${opcion.valor}`">
                                     <option :value="opcion.valor" x-text="opcion.texto"></option>
                                 </template>
@@ -1193,7 +1272,7 @@ document.addEventListener('alpine:init', () => {
                     <div class="divConclusiones">
                         <label class="block font-medium text-gray-700 mb-2">Pericardio:</label>
                         <div class="space-y-2">
-                            <select x-model="conclusiones.pericardio" @change="debouncedSave()" class="form-select max-w-md">
+                            <select x-model="conclusiones.pericardio" @change="debouncedSave()" class="form-select w-full">
                                 <option value="">:: Seleccionar ::</option>
                                 <option value="1">Libre</option>
                                 <option value="2">Derrame de grado leve</option>
@@ -1212,7 +1291,7 @@ document.addEventListener('alpine:init', () => {
                     <div class="divConclusiones">
                         <label class="block font-medium text-gray-700 mb-2">Imágenes agregadas y/o defectos congénitos:</label>
                         <div class="space-y-2">
-                            <select x-model="conclusiones.defectos_congenitos" @change="debouncedSave()" class="form-select max-w-md">
+                            <select x-model="conclusiones.defectos_congenitos" @change="debouncedSave()" class="form-select w-full">
                                 <option value="">:: Seleccionar ::</option>
                                 <option value="1">No</option>
                                 <option value="2">Sí</option>
@@ -1223,6 +1302,29 @@ document.addEventListener('alpine:init', () => {
                                           placeholder="Descripción de los defectos..."></textarea>
                             </div>
                         </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bg-white shadow-md rounded-lg overflow-hidden mt-6">
+                <div class="bg-gray-200 px-6 py-4">
+                    <h4 class="text-left text-lg font-semibold">Informe Preliminar:</h4>
+                </div>
+                <div class="p-6">
+                    <template x-if="previewItems().length === 0">
+                        <div class="text-sm text-gray-500">Sin datos aún.</div>
+                    </template>
+                    <div class="space-y-4" x-show="previewItems().length">
+                        <template x-for="item in previewItems()" :key="item.label">
+                            <div class="border-b border-gray-100 pb-3 last:border-0 last:pb-0">
+                                <div class="font-medium text-gray-800" x-text="item.label"></div>
+                                <div class="text-gray-700 whitespace-pre-line" x-text="item.value"></div>
+                                <div x-show="item.comentario" class="text-gray-600 mt-1 whitespace-pre-line">
+                                    <span class="font-medium">Comentario:</span>
+                                    <span x-text="item.comentario"></span>
+                                </div>
+                            </div>
+                        </template>
                     </div>
                 </div>
             </div>
