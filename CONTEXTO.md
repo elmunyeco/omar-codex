@@ -4,14 +4,23 @@
 - Sandbox de trabajo: `/home/eze/omar-codex`.
 - Proyecto Django (sandbox editable): `/home/eze/omar-codex/hhcc` (apps: `main`, `ecocardiograma`, `carotidas`, `ecostress`, `mmii`).
 - Proyecto Django “oficial” (solo lectura): `/home/eze/omar/hhcc`.
+- Directorio legacy/base del sistema (solo lectura): `/home/eze/omar` (DB MySQL).
 - Scraper completo del sitio original: `/home/eze/omar-codex/Scrap_cardioprietohc`.
 - Dumps locales del server nuevo: `/home/eze/omar/scrap_local_8080/data/raw/`.
+- Scrape base (solo GET, sistema `/home/eze/omar`): `/home/eze/omar-codex/scrap_local_8080_base`.
 
 ## Sistemas
 - Sitio viejo: `https://cardioprietohc.com`.
   - Credenciales: usuario `omar`, password `Corbis5`.
   - Endpoints relevantes (legacy): login, pacientes, historias, carótidas.
 - Sitio nuevo: `http://localhost:8080` (sin auth, en el entorno local).
+- Sistema base (legacy Django): `http://127.0.0.1:8080` (solo lectura; integración pendiente).
+- Regla de integración: ante discrepancias en estilos, templates o arquitectura compartida,
+  **prevalece `/home/eze/omar-codex`** (versión más nueva).
+- Regla de reemplazo de estudios: todo lo de **carótidas, doppler/MMII y stress/ecostress**
+  en `/home/eze/omar` o en MySQL se reemplaza por lo ya implementado en `/home/eze/omar-codex`.
+  Además, **ecocardiograma** se incorpora desde `/home/eze/omar-codex`.
+- Regla UI global: **los breadcrumbs desaparecen de todo el sistema**.
 
 ## Scraper del sitio viejo (resumen)
 - Config en `.env` de `Scrap_cardioprietohc`:

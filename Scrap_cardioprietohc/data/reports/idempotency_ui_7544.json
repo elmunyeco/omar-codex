@@ -1,0 +1,31 @@
+{
+  "comment_token": "TEST_IDEMPOTENCIA_1775239767",
+  "legacy": {
+    "comments_count": [
+      54,
+      55,
+      56
+    ],
+    "signs_peso_occurrences": [
+      3,
+      3,
+      3
+    ]
+  },
+  "local": {
+    "visits_count": [
+      13,
+      14,
+      14
+    ],
+    "comment_value": [
+      "",
+      "TEST_IDEMPOTENCIA_1775239767",
+      "TEST_IDEMPOTENCIA_1775239767"
+    ],
+    "save_status": [
+      200,
+      200
+    ]
+  }
+}

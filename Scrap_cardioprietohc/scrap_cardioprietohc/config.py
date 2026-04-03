@@ -14,6 +14,7 @@ class Settings:
     login_path: str
     pacientes_path: str
     historias_path: str
+    pacientes_max_pages: int
 
 
 load_dotenv()
@@ -29,6 +30,7 @@ settings = Settings(
     login_path=os.getenv("LOGIN_PATH", ""),
     pacientes_path=os.getenv("PACIENTES_PATH", "/index.php/pacientes/index"),
     historias_path=os.getenv("HISTORIAS_PATH", "/index.php/historias/index"),
+    pacientes_max_pages=int(os.getenv("PACIENTES_MAX_PAGES", "3")),
 )
 
 # Crear carpetas de salida si no existen

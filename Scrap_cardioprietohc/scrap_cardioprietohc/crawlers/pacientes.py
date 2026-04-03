@@ -1,4 +1,4 @@
-from typing import List, Dict
+from typing import List, Dict, Optional
 from urllib.parse import urljoin
 
 from bs4 import BeautifulSoup
@@ -8,11 +8,14 @@ from .. import pipelines
 from ..config import settings
 
 
-def scrape_pacientes(client: ScrapClient, max_pages: int = 3) -> List[Dict]:
+def scrape_pacientes(client: ScrapClient, max_pages: Optional[int] = None) -> List[Dict]:
     """
     Descarga hasta max_pages páginas de pacientes, guardando HTML y assets.
     No borra nada y persiste cada página por separado.
     """
+    if max_pages is None:
+        max_pages = settings.pacientes_max_pages
+
     pacientes: List[Dict] = []
     visited = set()
     to_visit = [settings.pacientes_path]
