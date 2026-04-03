@@ -90,3 +90,10 @@ package-lock.json
 # no docker exports
 *.tar
 tmp_pdf_render/
+
+render_legacy_vs_local.sh
+
+# Artifacts (local QA)
+scrap_legacy/
+scrap_local_8080_base/
+tmp_orden_test*.pdf
