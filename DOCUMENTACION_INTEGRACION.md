@@ -250,6 +250,14 @@ Quedo en posicion de integrar **cuando se confirmen**:
 - Comparacion CDN vs local OK en datos; PDF de carotidas corregido para mostrar texto descriptivo.
 - UI ecocardiograma: interlineado y altura de combos ajustados.
 - UI ecostress: removida normalizacion que rompia JS (datos cargan OK).
+- Lista de estudios por historia (nuevo):
+  - Nueva vista `/historias/<id>/estudios/` con filtro por fecha y acciones Ver/Imprimir/Enviar (placeholder).
+  - Link desde listado de historias en el icono de estudios.
+  - Iconos en la tabla (ver/imprimir/enviar).
+- Paginador actualizado en historias y pacientes (estilo omar-codex).
+- Estilos recuperados de omar-codex:
+  - Títulos `h1/h2/h3` centrados.
+  - Breadcrumbs / current-path.
 
 ## Fix aplicado: UI tolerante ecostress (2026-04-04)
 - Se elimino normalizacion `<br>` en ecostress porque introducia **SyntaxError** en JS inline.
