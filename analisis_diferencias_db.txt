@@ -1,0 +1,39 @@
+Resultado del sandbox (DB limpia + migrate) vs esquema de referencia (/home/eze/omar-codex/cardioprieto_schema.sql)
+Fecha: 2026-04-14
+
+Resumen ejecutivo
+- Las migraciones NO reproducen exactamente el esquema actual.
+- En una DB vacía, las migraciones corren (con el fix de 0003), pero el esquema resultante difiere.
+
+Diferencias estructurales principales
+1) Tablas faltantes en migraciones
+- comentarios (tabla legacy MyISAM, latin1)
+- random_hc (tabla legacy)
+
+2) Engine / charset / collation
+- comentarios: MyISAM + latin1 (real) vs no existe en migraciones.
+- indicaciones_visitas: latin1 (real) vs utf8mb4 (migraciones)
+- carotidas, conclusiones_ecocardiograma, mmii, segmentos_ecocardiograma:
+  real usa utf8mb4_uca1400_ai_ci; migraciones generan utf8mb4_unicode_ci
+
+3) indicaciones_visitas
+- Real: sin FK explícita; índices legacy (idHC) + ind_hist_fecha_idx + indicaciones_historia_idx
+- Migraciones: crea FK y tipos longtext; índice indicaciones_fecha_idx adicional
+
+4) pacientes
+- Real: campos NOT NULL (obraSocial, afiliado, telefono, celular, profesion)
+- Migraciones: esos campos NULL
+- Real: FULLTEXT nombre_apellido_idx
+- Migraciones: UNIQUE (idTipoDoc_id, numDoc) y no FULLTEXT
+
+5) condiciones_medicas_historias
+- Constraints/índices con nombres legacy en el real vs nombres autogenerados por Django
+
+Conclusión
+- Para reproducir el esquema actual, hay que ajustar modelos/migraciones (o agregar migraciones legacy)
+  para: tablas faltantes, nullability, fulltext, collations, engines y FKs.
+
+Nota del sandbox
+- Se usó MariaDB 11.4 en contenedor nuevo (puerto 3310).
+- Se creó la DB cardioprieto_sandbox y se corrieron migraciones completas.
+- El diff se hizo con dumps --no-data normalizados (sin headers ni AUTO_INCREMENT).

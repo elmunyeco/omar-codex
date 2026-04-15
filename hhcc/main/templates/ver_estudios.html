@@ -1,0 +1,104 @@
+{% extends "base.html" %}
+
+{% block title %}Estudios - Historia {{ historia.id }}{% endblock %}
+
+{% block content %}
+<div class="container mx-auto p-6 max-w-6xl">
+    <div class="bg-white rounded-lg shadow-sm p-6 mb-6">
+        <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+            <div>
+                <h1 class="text-2xl font-semibold text-gray-800">Estudios</h1>
+                <div class="text-sm text-gray-600 mt-1">
+                    {{ paciente.nombre }} {{ paciente.apellido }} · Historia {{ historia.id }}
+                </div>
+            </div>
+            <div class="flex items-center gap-3">
+                <a href="{% url 'historia_estudios_nuevo' historia_id=historia.id %}"
+                   class="px-4 py-2 rounded bg-[#9a4035] text-white hover:bg-[#7a332b] transition-colors">
+                    Nuevo estudio
+                </a>
+                <a href="{% url 'detalle_historia_con_historial' historia_id=historia.id %}"
+                   class="px-4 py-2 rounded border border-gray-300 text-gray-700 hover:bg-gray-50 transition-colors">
+                    Volver a historia
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <div class="bg-white rounded-lg shadow-sm p-6 mb-6">
+        <form class="flex flex-col md:flex-row md:items-end gap-4" method="get">
+            <div class="flex flex-col">
+                <label class="text-sm text-gray-600 mb-1" for="desde">Desde</label>
+                <input id="desde" name="desde" type="date" value="{{ desde }}"
+                       class="border rounded px-3 py-2 text-sm">
+            </div>
+            <div class="flex flex-col">
+                <label class="text-sm text-gray-600 mb-1" for="hasta">Hasta</label>
+                <input id="hasta" name="hasta" type="date" value="{{ hasta }}"
+                       class="border rounded px-3 py-2 text-sm">
+            </div>
+            <div class="flex items-center gap-2">
+                <button type="submit"
+                        class="px-4 py-2 rounded bg-gray-800 text-white hover:bg-gray-700 transition-colors">
+                    Filtrar
+                </button>
+                <a href="{% url 'historia_estudios' historia_id=historia.id %}"
+                   class="px-4 py-2 rounded border border-gray-300 text-gray-700 hover:bg-gray-50 transition-colors">
+                    Limpiar
+                </a>
+            </div>
+        </form>
+    </div>
+
+    <div class="bg-white rounded-lg shadow-sm p-6">
+        <div class="overflow-x-auto">
+            <table class="w-full table-auto border-collapse border border-gray-200">
+                <thead class="bg-gray-100">
+                    <tr>
+                        <th class="px-4 py-2 text-left text-sm font-semibold text-gray-700 border border-gray-200">Tipo</th>
+                        <th class="px-4 py-2 text-left text-sm font-semibold text-gray-700 border border-gray-200">Fecha</th>
+                        <th class="px-4 py-2 text-left text-sm font-semibold text-gray-700 border border-gray-200">ID</th>
+                        <th class="px-4 py-2 text-center text-sm font-semibold text-gray-700 border border-gray-200">Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for estudio in estudios %}
+                    <tr class="hover:bg-gray-50">
+                        <td class="px-4 py-2 border border-gray-200 text-sm">{{ estudio.tipo }}</td>
+                        <td class="px-4 py-2 border border-gray-200 text-sm">
+                            {% if estudio.fecha %}
+                                {{ estudio.fecha|date:"d/m/Y" }}
+                            {% else %}
+                                —
+                            {% endif %}
+                        </td>
+                        <td class="px-4 py-2 border border-gray-200 text-sm">{{ estudio.id }}</td>
+                        <td class="px-4 py-2 border border-gray-200 text-sm">
+                            <div class="flex justify-center gap-4">
+                                <a href="{{ estudio.ver_url }}"
+                                   class="text-blue-600 hover:text-blue-800 transition-colors">
+                                    Ver
+                                </a>
+                                <a href="{{ estudio.imprimir_url }}"
+                                   class="text-[#9a4035] hover:text-[#7a332b] transition-colors">
+                                    Imprimir
+                                </a>
+                                <span class="text-gray-400 cursor-not-allowed" title="Próximamente">
+                                    Enviar
+                                </span>
+                            </div>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="4" class="px-4 py-4 text-center text-sm text-gray-500">
+                            No se encontraron estudios para esta historia.
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

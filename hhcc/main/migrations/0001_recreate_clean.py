@@ -169,8 +169,4 @@ class Migration(migrations.Migration):
             model_name='paciente',
             index=models.Index(fields=['fechaAlta'], name='paciente_fechaAlta_idx'),
         ),
-        migrations.AlterUniqueTogether(
-            name='paciente',
-            unique_together={('idTipoDoc', 'numDoc')},
-        ),
     ]

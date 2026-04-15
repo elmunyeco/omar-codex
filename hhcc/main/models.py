@@ -56,10 +56,6 @@ class Paciente(models.Model):
     """
     class Meta:
         db_table = "pacientes"
-        unique_together = (
-            "idTipoDoc",
-            "numDoc",
-        )
         ordering = ['-fechaAlta']
         indexes = [
             models.Index(fields=["nombre"], name="nombre_paciente_idx"),

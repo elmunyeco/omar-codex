@@ -67,6 +67,16 @@ urlpatterns = [
         views.detalle_historia_con_historial,
         name="detalle_historia_con_historial",
     ),
+    path(
+        "historias/<int:historia_id>/estudios/",
+        views.historia_estudios,
+        name="historia_estudios",
+    ),
+    path(
+        "historias/<int:historia_id>/estudios/nuevo/",
+        views.historia_estudios_nuevo,
+        name="historia_estudios_nuevo",
+    ),
     path("eliminar-comentario/", views.eliminar_comentario, name="eliminar_comentario"),
     
     

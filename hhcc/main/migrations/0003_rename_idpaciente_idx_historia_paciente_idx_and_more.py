@@ -11,20 +11,73 @@ class Migration(migrations.Migration):
     ]
 
     operations = [
-        migrations.RenameIndex(
-            model_name='historiaclinica',
-            new_name='historia_paciente_idx',
-            old_name='idPaciente_idx',
+        # Index renames made robust so fresh DBs don't fail when
+        # an index already exists (e.g. created earlier by custom SQL).
+        migrations.SeparateDatabaseAndState(
+            database_operations=[
+                migrations.RunSQL(
+                    sql=[
+                        "SET @old := (SELECT COUNT(1) FROM information_schema.statistics WHERE table_schema=DATABASE() AND table_name='historias_clinicas' AND index_name='idPaciente_idx')",
+                        "SET @new := (SELECT COUNT(1) FROM information_schema.statistics WHERE table_schema=DATABASE() AND table_name='historias_clinicas' AND index_name='historia_paciente_idx')",
+                        "SET @sql := IF(@old > 0 AND @new = 0, 'ALTER TABLE historias_clinicas RENAME INDEX idPaciente_idx TO historia_paciente_idx', IF(@old > 0 AND @new > 0, 'ALTER TABLE historias_clinicas DROP INDEX idPaciente_idx', 'SELECT 1'))",
+                        "PREPARE stmt FROM @sql",
+                        "EXECUTE stmt",
+                        "DEALLOCATE PREPARE stmt",
+                    ],
+                    reverse_sql=migrations.RunSQL.noop,
+                ),
+            ],
+            state_operations=[
+                migrations.RenameIndex(
+                    model_name='historiaclinica',
+                    new_name='historia_paciente_idx',
+                    old_name='idPaciente_idx',
+                ),
+            ],
         ),
-        migrations.RenameIndex(
-            model_name='indicacionesvisitas',
-            new_name='indicaciones_fecha_idx',
-            old_name='ind_fecha_idx',
+        migrations.SeparateDatabaseAndState(
+            database_operations=[
+                migrations.RunSQL(
+                    sql=[
+                        "SET @old := (SELECT COUNT(1) FROM information_schema.statistics WHERE table_schema=DATABASE() AND table_name='indicaciones_visitas' AND index_name='ind_fecha_idx')",
+                        "SET @new := (SELECT COUNT(1) FROM information_schema.statistics WHERE table_schema=DATABASE() AND table_name='indicaciones_visitas' AND index_name='indicaciones_fecha_idx')",
+                        "SET @sql := IF(@old > 0 AND @new = 0, 'ALTER TABLE indicaciones_visitas RENAME INDEX ind_fecha_idx TO indicaciones_fecha_idx', IF(@old > 0 AND @new > 0, 'ALTER TABLE indicaciones_visitas DROP INDEX ind_fecha_idx', 'SELECT 1'))",
+                        "PREPARE stmt FROM @sql",
+                        "EXECUTE stmt",
+                        "DEALLOCATE PREPARE stmt",
+                    ],
+                    reverse_sql=migrations.RunSQL.noop,
+                ),
+            ],
+            state_operations=[
+                migrations.RenameIndex(
+                    model_name='indicacionesvisitas',
+                    new_name='indicaciones_fecha_idx',
+                    old_name='ind_fecha_idx',
+                ),
+            ],
         ),
-        migrations.RenameIndex(
-            model_name='indicacionesvisitas',
-            new_name='ind_hist_fecha_idx',
-            old_name='ind_his_fecha_idx',
+        migrations.SeparateDatabaseAndState(
+            database_operations=[
+                migrations.RunSQL(
+                    sql=[
+                        "SET @old := (SELECT COUNT(1) FROM information_schema.statistics WHERE table_schema=DATABASE() AND table_name='indicaciones_visitas' AND index_name='ind_his_fecha_idx')",
+                        "SET @new := (SELECT COUNT(1) FROM information_schema.statistics WHERE table_schema=DATABASE() AND table_name='indicaciones_visitas' AND index_name='ind_hist_fecha_idx')",
+                        "SET @sql := IF(@old > 0 AND @new = 0, 'ALTER TABLE indicaciones_visitas RENAME INDEX ind_his_fecha_idx TO ind_hist_fecha_idx', IF(@old > 0 AND @new > 0, 'ALTER TABLE indicaciones_visitas DROP INDEX ind_his_fecha_idx', 'SELECT 1'))",
+                        "PREPARE stmt FROM @sql",
+                        "EXECUTE stmt",
+                        "DEALLOCATE PREPARE stmt",
+                    ],
+                    reverse_sql=migrations.RunSQL.noop,
+                ),
+            ],
+            state_operations=[
+                migrations.RenameIndex(
+                    model_name='indicacionesvisitas',
+                    new_name='ind_hist_fecha_idx',
+                    old_name='ind_his_fecha_idx',
+                ),
+            ],
         ),
         migrations.AlterField(
             model_name='paciente',

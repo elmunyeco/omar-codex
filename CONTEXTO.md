@@ -1,6 +1,7 @@
 # CONTEXTO (general)
 
 ## Ubicaciones clave
+- Asociación permanente de trabajo: `/home/eze/omar-codex` y `/home/eze/omar` se tratan como dos repositorios de un mismo negocio y deben considerarse juntos en cualquier análisis/cambio.
 - Sandbox de trabajo: `/home/eze/omar-codex`.
 - Proyecto Django (sandbox editable): `/home/eze/omar-codex/hhcc` (apps: `main`, `ecocardiograma`, `carotidas`, `ecostress`, `mmii`).
 - Proyecto Django “oficial” (solo lectura): `/home/eze/omar/hhcc`.
